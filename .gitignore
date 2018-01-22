@@ -1,0 +1,13 @@
+# IDEA files
+*.iml
+*.ipr
+*.iws
+
+# Build files
+.gradle/*
+gradle/*
+gradlew
+gradlew.bat
+build/*
+droid/build/*
+out/*
