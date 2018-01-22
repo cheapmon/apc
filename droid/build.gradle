@@ -1,14 +1,54 @@
-group 'cheapmon'
-version '0'
-
-apply plugin: 'java'
-
-sourceCompatibility = 1.8
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit',
+            name: 'junit',
+            version: '4.12'
+    androidTestCompile group: 'com.android.support.test.espresso',
+            name: 'espresso-core',
+            version: '2.2.2'
+    androidTestCompile group: 'com.android.support.test.uiautomator',
+            name: 'uiautomator-v18',
+            version: '2.1.2'
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
+
+android {
+    buildToolsVersion '26.0.2'
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.github.cheapmon.apc.droid"
+        minSdkVersion 18
+        targetSdkVersion 26
+        versionCode 0
+        versionName "0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
 }
