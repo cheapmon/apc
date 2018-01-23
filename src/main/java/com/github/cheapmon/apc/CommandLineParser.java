@@ -1,10 +1,12 @@
 package com.github.cheapmon.apc;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -50,12 +52,8 @@ public class CommandLineParser {
   private static Options getOptions() {
     Options options = new Options();
     options.addOption("h", "help", false, "This help message");
-    OptionGroup inputOptions = new OptionGroup();
-    inputOptions.addOption(
-        Option.builder("i").longOpt("id").hasArgs().desc("App ids").build());
-    inputOptions.addOption(
-        Option.builder("f").longOpt("file").hasArg().desc("File containing app ids").build());
-    options.addOptionGroup(inputOptions);
+    options.addOption(Option.builder("i").longOpt("id").hasArgs().desc("App ids").build());
+    options.addOption("f", "file", true, "File containing app ids, separated by newlines");
     options.addOption(
         Option.builder("d").longOpt("device").hasArgs().desc("Device to run extraction on")
             .build());
@@ -64,6 +62,33 @@ public class CommandLineParser {
     options.addOption("m", "extract-model", false, "Extract model of app");
     options.addOption("l", "log-level", true, "Log level");
     return options;
+  }
+
+  /**
+   * Get list of applications to crawl for textual information.<br><br>
+   *
+   * Apps to extract are input either directly via command line or via one file. If neither is
+   * given, APC halts. When given both, the file is favored.<br><br>
+   *
+   * In a file, ids are expected to be listed separated by newlines.
+   *
+   * @return IDs of apps to crawl
+   */
+  private static String[] getIDs(String[] ids, String file) {
+    if (file == null) {
+      if (ids == null) {
+        printUsage("Please supply at least one application id.");
+      } else {
+        return ids;
+      }
+    } else {
+      try {
+        return Files.readAllLines(Paths.get(file)).toArray(new String[0]);
+      } catch (IOException ex) {
+        printUsage("Could not read ID file. Please check for errors.");
+      }
+    }
+    return new String[0];
   }
 
   /**
