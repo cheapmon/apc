@@ -7,6 +7,12 @@ apply plugin: 'application'
 sourceCompatibility = 1.8
 mainClassName = 'com.github.cheapmon.apc.APCMain'
 
+run {
+    if (project.hasProperty("appArgs")) {
+        args appArgs.split(",")
+    }
+}
+
 repositories {
     mavenCentral()
     maven {
