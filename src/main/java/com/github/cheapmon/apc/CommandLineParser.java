@@ -1,8 +1,12 @@
 package com.github.cheapmon.apc;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 /**
  * Command line options and parsing. <br><br>
@@ -19,6 +23,22 @@ import org.apache.commons.cli.Options;
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
 public class CommandLineParser {
+
+  /**
+   * Parse options given by command line, check for validity, pass on for further use.
+   *
+   * @param args Command line arguments
+   */
+  public static void parse(String[] args) {
+    try {
+      CommandLine cl = new DefaultParser().parse(getOptions(), args);
+      if (cl.hasOption("help")) {
+        printUsage();
+      }
+    } catch (ParseException ex) {
+      printUsage(ex.getMessage());
+    }
+  }
 
   /**
    * Definition of available command line arguments. <br><br>
@@ -44,6 +64,24 @@ public class CommandLineParser {
     options.addOption("m", "extract-model", false, "Extract model of app");
     options.addOption("l", "log-level", true, "Log level");
     return options;
+  }
+
+  /**
+   * Display usage and exit.
+   */
+  private static void printUsage() {
+    new HelpFormatter().printHelp("./apc.sh", getOptions(), true);
+    System.exit(0);
+  }
+
+  /**
+   * Display usage, show extra message and exit.
+   *
+   * @param msg Message to display
+   */
+  private static void printUsage(String msg) {
+    System.out.println(msg);
+    printUsage();
   }
 
 }
