@@ -13,6 +13,13 @@ run {
     }
 }
 
+task(doc, type: Javadoc) {
+    source = sourceSets.main.allJava
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    classpath = configurations.compile
+    destinationDir = file("./build/doc/")
+}
+
 repositories {
     mavenCentral()
     maven {
