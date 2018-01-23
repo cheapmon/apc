@@ -31,15 +31,19 @@ public class CommandLineParser {
    *
    * @param args Command line arguments
    */
-  public static void parse(String[] args) {
+  public static APCOptions parse(String[] args) {
+    APCOptions options = new APCOptions();
     try {
       CommandLine cl = new DefaultParser().parse(getOptions(), args);
       if (cl.hasOption("help")) {
         printUsage();
       }
+      String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
+      options.setIds(ids);
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }
+    return options;
   }
 
   /**
