@@ -11,3 +11,6 @@ gradlew.bat
 build/*
 droid/build/*
 out/*
+
+# Android SDK properties
+local.properties
