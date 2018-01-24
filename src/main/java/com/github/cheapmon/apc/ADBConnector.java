@@ -23,7 +23,9 @@ import java.io.InputStreamReader;
 public class ADBConnector {
 
   /**
-   * List all available Android (virtual) devices attach to the computer.
+   * List all available Android (virtual) devices attached to the computer.<br><br>
+   *
+   * Note that this will only list devices that have Android debugging enabled.
    *
    * @return Device list
    */
