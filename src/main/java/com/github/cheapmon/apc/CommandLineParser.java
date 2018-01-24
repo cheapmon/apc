@@ -21,7 +21,6 @@ import org.apache.commons.cli.ParseException;
  * <li>Device to use</li>
  * <li>Searching algorithm to use</li>
  * <li>(Model) extraction</li>
- * <li>Level of logging</li>
  * </ul>
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
@@ -71,7 +70,6 @@ public class CommandLineParser {
     options.addOption(
         Option.builder("s").longOpt("search").hasArgs().desc("Searching algorithm").build());
     options.addOption("m", "extract-model", false, "Extract model of app");
-    options.addOption("l", "log-level", true, "Log level");
     return options;
   }
 
