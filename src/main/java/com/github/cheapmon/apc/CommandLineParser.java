@@ -1,5 +1,6 @@
 package com.github.cheapmon.apc;
 
+import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -40,6 +41,8 @@ public class CommandLineParser {
       }
       String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
       options.setIds(ids);
+      ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
+      options.setExtractionMode(extractionMode);
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }
@@ -93,6 +96,22 @@ public class CommandLineParser {
       }
     }
     return new String[0];
+  }
+
+  /**
+   * Get mode of extraction used when crawling applications.<br><br>
+   *
+   * Simply checks whether the command line option "extract-model" has been set.
+   *
+   * @param option Command line has option
+   * @return Mode of extraction
+   */
+  private static ExtractionMode getMode(boolean option) {
+    if (option) {
+      return ExtractionMode.MODEL;
+    } else {
+      return ExtractionMode.POLICY;
+    }
   }
 
   /**
