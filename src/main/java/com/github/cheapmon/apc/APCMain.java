@@ -1,7 +1,10 @@
 package com.github.cheapmon.apc;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
- * APC extracts privacy policies from Android applications. <br><br>
+ * APC extracts privacy policies from Android applications.<br><br>
  *
  * Main pipeline: <ul>
  * <li>Parse command line options</li>

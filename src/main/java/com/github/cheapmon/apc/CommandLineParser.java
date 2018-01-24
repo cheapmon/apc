@@ -13,7 +13,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 /**
- * Command line options and parsing. <br><br>
+ * Command line options and parsing.<br><br>
  *
  * <ul>
  * <li>Help message</li>

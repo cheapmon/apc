@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
- * Run commands on Android device by connecting to the Android Debug Bridge.
+ * Run commands on Android device by connecting to the Android Debug Bridge.<br><br>
  *
  * <ul>
  * <li>List devices</li>
@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
  * <li>(Un)install APK from computer or via Google play</li>
  * <li>Upload and retrieve files from device</li>
  * <li>Run Android test</li>
- * <li></li>
  * </ul>
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
