@@ -32,6 +32,7 @@ public class CommandLineParser {
    * Parse options given by command line, check for validity, pass on for further use.
    *
    * @param args Command line arguments
+   * @return Parsed options
    */
   public static APCOptions parse(String[] args) {
     APCOptions options = new APCOptions();
@@ -82,6 +83,8 @@ public class CommandLineParser {
    *
    * In a file, ids are expected to be listed separated by newlines.
    *
+   * @param ids Given IDs
+   * @param file Given file containing ids
    * @return IDs of apps to crawl
    */
   private static String[] getIDs(String[] ids, String file) {

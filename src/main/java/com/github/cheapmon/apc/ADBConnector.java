@@ -39,6 +39,7 @@ public class ADBConnector {
    * Create a process from system call.
    *
    * @param commands System commands to run
+   * @return Output or error of finished process
    */
   private static InputStream build(String... commands) {
     try {
