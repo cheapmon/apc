@@ -4,6 +4,7 @@ import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -40,9 +41,11 @@ public class CommandLineParser {
         printUsage();
       }
       String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
-      options.setIds(ids);
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
+      String device = getDevice(cl.getOptionValue("device"));
+      options.setIds(ids);
       options.setExtractionMode(extractionMode);
+      options.setDevice(device);
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }
@@ -112,6 +115,37 @@ public class CommandLineParser {
     } else {
       return ExtractionMode.POLICY;
     }
+  }
+
+  /**
+   * Get device extraction is run on.<br><br>
+   *
+   * Input is a device label. If none is given, defaults to first device in list. If no device
+   * is attached or the given label is incorrect, APC halts.
+   *
+   * @param device Device label given by user
+   * @return Device label chosen by APC
+   */
+  private static String getDevice(String device) {
+    String[] deviceList = ADBConnector.deviceList();
+    if (deviceList.length == 0) {
+      printUsage(
+          "Please attach at least one Android device and check if Android debugging is active.");
+    }
+    if (device == null) {
+      return deviceList[0];
+    }
+    if (Arrays.asList(deviceList).contains(device)) {
+      return device;
+    } else {
+      System.out
+          .println("Given device label is incorrect. Please check for errors.\nAvailable devices:");
+      for (String dev : deviceList) {
+        System.out.println(String.format("* %s", dev));
+      }
+      System.exit(0);
+    }
+    return "";
   }
 
   /**

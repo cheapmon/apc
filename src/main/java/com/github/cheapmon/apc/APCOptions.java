@@ -25,6 +25,11 @@ public class APCOptions {
   private ExtractionMode extractionMode;
 
   /**
+   * Device extraction is run on.
+   */
+  private String device;
+
+  /**
    * Get all application IDs.
    *
    * @return IDs
@@ -58,6 +63,24 @@ public class APCOptions {
    */
   public void setExtractionMode(ExtractionMode extractionMode) {
     this.extractionMode = extractionMode;
+  }
+
+  /**
+   * Get device in use.
+   *
+   * @return Chosen device
+   */
+  public String getDevice() {
+    return this.device;
+  }
+
+  /**
+   * Set device to use.
+   *
+   * @param device New device
+   */
+  public void setDevice(String device) {
+    this.device = device;
   }
 
 }

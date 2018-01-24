@@ -1,8 +1,10 @@
 package com.github.cheapmon.apc;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Run commands on Android device by connecting to the Android Debug Bridge.
@@ -19,6 +21,17 @@ import java.io.InputStream;
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
 public class ADBConnector {
+
+  /**
+   * List all available Android (virtual) devices attach to the computer.
+   *
+   * @return Device list
+   */
+  public static String[] deviceList() {
+    return new BufferedReader(new InputStreamReader(build("adb", "devices"))).lines().skip(1)
+        .filter(line -> line.contains("device")).map(line -> line.split("\\s+")[0])
+        .toArray(String[]::new);
+  }
 
   /**
    * Create a process from system call.
