@@ -118,7 +118,9 @@ public class CommandLineParser {
    * Display usage and exit.
    */
   private static void printUsage() {
-    new HelpFormatter().printHelp("./apc.sh", getOptions(), true);
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.setOptionComparator(null);
+    formatter.printHelp("./apc.sh", getOptions(), true);
     System.exit(0);
   }
 
