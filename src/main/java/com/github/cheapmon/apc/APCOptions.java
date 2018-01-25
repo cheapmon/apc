@@ -30,6 +30,11 @@ public class APCOptions {
   private String device;
 
   /**
+   * Path to search algorithm class used to extract.
+   */
+  private String algorithmPath;
+
+  /**
    * Get all application IDs.
    *
    * @return IDs
@@ -81,6 +86,24 @@ public class APCOptions {
    */
   public void setDevice(String device) {
     this.device = device;
+  }
+
+  /**
+   * Get path to search algorithm class in use.
+   *
+   * @return Path to chosen algorithm
+   */
+  public String getAlgorithmPath() {
+    return this.algorithmPath;
+  }
+
+  /**
+   * Set path to algorithm class to use.
+   *
+   * @param algorithmPath New path to algorithm class
+   */
+  public void setAlgorithmPath(String algorithmPath) {
+    this.algorithmPath = algorithmPath;
   }
 
 }

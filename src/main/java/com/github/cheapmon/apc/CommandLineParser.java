@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc;
 
 import com.github.cheapmon.apc.APCOptions.ExtractionMode;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -33,7 +34,7 @@ public class CommandLineParser {
    * @param args Command line arguments
    * @return Parsed options
    */
-  public static APCOptions parse(String[] args) {
+  public static APCOptions parse(String[] args) throws IOException {
     APCOptions options = new APCOptions();
     try {
       CommandLine cl = new DefaultParser().parse(getOptions(), args);
@@ -43,9 +44,11 @@ public class CommandLineParser {
       String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
+      String algorithmPath = getAlgorithmPath(cl.getOptionValue("search"));
       options.setIds(ids);
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
+      options.setAlgorithmPath(algorithmPath);
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }
@@ -146,6 +149,51 @@ public class CommandLineParser {
       }
       System.exit(0);
     }
+    return "";
+  }
+
+  /**
+   * Get search algorithm used when performing extraction.<br><br>
+   *
+   * Input is an algorithm label, which is a short version of the simple class name of the
+   * algorithm. If none is given, defaults to optimized search. When the label is incorrect,
+   * APC halts.<br><br>
+   *
+   * Short name of an algorithm is all capital letters in the filename. The full file path is
+   * returned.<br><br>
+   *
+   * Java modules can't be dependant on Android modules, so reflections or service loaders can't
+   * be used here. Simply searches the submodule for files with the correct file name. Please note
+   * that this is just a workaround and does not safely guarantee extensibility, since this won't
+   * check for correct implementations, etc.
+   *
+   * @param algorithmPath Algorithm label given by user
+   * @return Full path of algorithm chosen by APC
+   */
+  private static String getAlgorithmPath(String algorithmPath) throws IOException {
+    if (algorithmPath == null) {
+      return Paths
+          .get(".", "droid", "src", "androidTest", "java", "com", "github", "cheapmon", "apc",
+              "droid", "search", "OptimizedSearch.java").toAbsolutePath().toString();
+    }
+    File[] files = Files.walk(Paths.get(".", "droid"))
+        .filter(file -> file.getFileName().toString().endsWith("Search.java"))
+        .map(path -> new File(path.toAbsolutePath().toString()))
+        .toArray(File[]::new);
+    for (File file : files) {
+      if (file.getName().replaceAll("[a-z\\.]+", "").toLowerCase()
+          .equalsIgnoreCase(algorithmPath)) {
+        return file.getAbsolutePath();
+      }
+    }
+    System.out.println("Given algorithm label is incorrect. Please check for errors.");
+    System.out.println("Available search algorithms:");
+    for (File file : files) {
+      String name = file.getName().replaceAll(".java", "");
+      String shortName = name.replaceAll("[a-z]+", "").toLowerCase();
+      System.out.println(String.format("* %-4s %s", shortName, name));
+    }
+    System.exit(0);
     return "";
   }
 
