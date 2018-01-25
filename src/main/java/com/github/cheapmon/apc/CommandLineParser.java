@@ -67,11 +67,8 @@ public class CommandLineParser {
     options.addOption("h", "help", false, "This help message");
     options.addOption(Option.builder("i").longOpt("id").hasArgs().desc("App ids").build());
     options.addOption("f", "file", true, "File containing app ids, separated by newlines");
-    options.addOption(
-        Option.builder("d").longOpt("device").hasArgs().desc("Device to run extraction on")
-            .build());
-    options.addOption(
-        Option.builder("s").longOpt("search").hasArgs().desc("Searching algorithm").build());
+    options.addOption("d", "device", true, "Device to run extraction on");
+    options.addOption("s", "search", true, "Searching algorithm");
     options.addOption("m", "extract-model", false, "Extract model of app");
     return options;
   }
