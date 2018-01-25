@@ -142,8 +142,8 @@ public class CommandLineParser {
     if (Arrays.asList(deviceList).contains(device)) {
       return device;
     } else {
-      System.out
-          .println("Given device label is incorrect. Please check for errors.\nAvailable devices:");
+      System.out.println("Given device label is incorrect. Please check for errors.");
+      System.out.println("Available devices:");
       for (String dev : deviceList) {
         System.out.println(String.format("* %s", dev));
       }
