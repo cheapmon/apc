@@ -49,6 +49,13 @@ public class CommandLineParser {
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
       options.setAlgorithmPath(algorithmPath);
+      APCLogger
+          .info(CommandLineParser.class, String.format("Found %s application ids", ids.length));
+      APCLogger
+          .info(CommandLineParser.class, String.format("Extraction mode is %s", extractionMode));
+      APCLogger.info(CommandLineParser.class, String.format("Using device %s", device));
+      APCLogger.info(CommandLineParser.class,
+          String.format("Using %s", new File(algorithmPath).getName()));
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }
