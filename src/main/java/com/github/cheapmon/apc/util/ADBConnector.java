@@ -28,6 +28,7 @@ public class ADBConnector {
    * Note that this will only list devices that have Android debugging enabled.
    *
    * @return Device list
+   * @throws APCException System call fails
    */
   public static String[] deviceList() throws APCException {
     return new BufferedReader(new InputStreamReader(build("adb", "devices"))).lines().skip(1)
@@ -40,6 +41,7 @@ public class ADBConnector {
    *
    * @param commands System commands to run
    * @return Output or error of finished process
+   * @throws APCException Building process fails
    */
   private static InputStream build(String... commands) throws APCException {
     try {

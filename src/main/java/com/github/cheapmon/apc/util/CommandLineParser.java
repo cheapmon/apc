@@ -35,6 +35,7 @@ public class CommandLineParser {
    *
    * @param args Command line arguments
    * @return Parsed options
+   * @throws APCException Finding device fails
    */
   public static APCOptions parse(String[] args) throws APCException {
     APCOptions options = new APCOptions();
@@ -135,6 +136,7 @@ public class CommandLineParser {
    *
    * @param device Device label given by user
    * @return Device label chosen by APC
+   * @throws APCException Communication with ADB fails
    */
   private static String getDevice(String device) throws APCException {
     String[] deviceList = ADBConnector.deviceList();
@@ -175,6 +177,7 @@ public class CommandLineParser {
    *
    * @param algorithmPath Algorithm label given by user
    * @return Full path of algorithm chosen by APC
+   * @throws APCException Searching folders fails
    */
   private static String getAlgorithmPath(String algorithmPath) throws APCException {
     if (algorithmPath == null) {

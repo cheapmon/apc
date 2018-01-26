@@ -25,6 +25,7 @@ public class APCMain {
    * Implementation of main pipeline (see above).
    *
    * @param args Command line arguments
+   * @throws APCException APC fails
    */
   public static void main(String[] args) throws APCException {
     APCOptions options = CommandLineParser.parse(args);
