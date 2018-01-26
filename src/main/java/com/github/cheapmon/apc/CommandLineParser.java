@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc;
 
 import com.github.cheapmon.apc.APCOptions.ExtractionMode;
+import com.github.cheapmon.apc.failure.APCException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ public class CommandLineParser {
    * @param args Command line arguments
    * @return Parsed options
    */
-  public static APCOptions parse(String[] args) throws IOException {
+  public static APCOptions parse(String[] args) throws APCException {
     APCOptions options = new APCOptions();
     try {
       CommandLine cl = new DefaultParser().parse(getOptions(), args);
@@ -134,7 +135,7 @@ public class CommandLineParser {
    * @param device Device label given by user
    * @return Device label chosen by APC
    */
-  private static String getDevice(String device) {
+  private static String getDevice(String device) throws APCException {
     String[] deviceList = ADBConnector.deviceList();
     if (deviceList.length == 0) {
       printUsage(
@@ -174,30 +175,34 @@ public class CommandLineParser {
    * @param algorithmPath Algorithm label given by user
    * @return Full path of algorithm chosen by APC
    */
-  private static String getAlgorithmPath(String algorithmPath) throws IOException {
+  private static String getAlgorithmPath(String algorithmPath) throws APCException {
     if (algorithmPath == null) {
       return Paths
           .get(".", "droid", "src", "androidTest", "java", "com", "github", "cheapmon", "apc",
               "droid", "search", "OptimizedSearch.java").toAbsolutePath().toString();
     }
-    File[] files = Files.walk(Paths.get(".", "droid"))
-        .filter(file -> file.getFileName().toString().endsWith("Search.java"))
-        .map(path -> new File(path.toAbsolutePath().toString()))
-        .toArray(File[]::new);
-    for (File file : files) {
-      if (file.getName().replaceAll("[a-z\\.]+", "").toLowerCase()
-          .equalsIgnoreCase(algorithmPath)) {
-        return file.getAbsolutePath();
+    try {
+      File[] files = Files.walk(Paths.get(".", "droid"))
+          .filter(file -> file.getFileName().toString().endsWith("Search.java"))
+          .map(path -> new File(path.toAbsolutePath().toString()))
+          .toArray(File[]::new);
+      for (File file : files) {
+        if (file.getName().replaceAll("[a-z\\.]+", "").toLowerCase()
+            .equalsIgnoreCase(algorithmPath)) {
+          return file.getAbsolutePath();
+        }
       }
+      System.out.println("Given algorithm label is incorrect. Please check for errors.");
+      System.out.println("Available search algorithms:");
+      for (File file : files) {
+        String name = file.getName().replaceAll(".java", "");
+        String shortName = name.replaceAll("[a-z]+", "").toLowerCase();
+        System.out.println(String.format("* %-4s %s", shortName, name));
+      }
+      System.exit(0);
+    } catch (IOException ex) {
+      throw new APCException("Filtering submodule folders failed", ex);
     }
-    System.out.println("Given algorithm label is incorrect. Please check for errors.");
-    System.out.println("Available search algorithms:");
-    for (File file : files) {
-      String name = file.getName().replaceAll(".java", "");
-      String shortName = name.replaceAll("[a-z]+", "").toLowerCase();
-      System.out.println(String.format("* %-4s %s", shortName, name));
-    }
-    System.exit(0);
     return "";
   }
 

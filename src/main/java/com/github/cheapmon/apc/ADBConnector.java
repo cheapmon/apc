@@ -1,7 +1,8 @@
 package com.github.cheapmon.apc;
 
+import com.github.cheapmon.apc.failure.APCException;
+import com.github.cheapmon.apc.failure.SystemCallException;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -28,7 +29,7 @@ public class ADBConnector {
    *
    * @return Device list
    */
-  public static String[] deviceList() {
+  public static String[] deviceList() throws APCException {
     return new BufferedReader(new InputStreamReader(build("adb", "devices"))).lines().skip(1)
         .filter(line -> line.contains("device")).map(line -> line.split("\\s+")[0])
         .toArray(String[]::new);
@@ -40,7 +41,7 @@ public class ADBConnector {
    * @param commands System commands to run
    * @return Output or error of finished process
    */
-  private static InputStream build(String... commands) {
+  private static InputStream build(String... commands) throws APCException {
     try {
       Process process = new ProcessBuilder(commands).start();
       InputStream output = process.getInputStream();
@@ -49,11 +50,10 @@ public class ADBConnector {
       if (exitCode == 0) {
         return output;
       } else {
-        return error;
+        throw new SystemCallException(commands, error);
       }
     } catch (InterruptedException | IOException ex) {
-      System.out.println(ex.getMessage());
-      return new ByteArrayInputStream("".getBytes());
+      throw new APCException("Building process for system call failed", ex);
     }
   }
 

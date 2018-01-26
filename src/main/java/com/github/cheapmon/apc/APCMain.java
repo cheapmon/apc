@@ -1,5 +1,7 @@
 package com.github.cheapmon.apc;
 
+import com.github.cheapmon.apc.failure.APCException;
+
 /**
  * APC extracts privacy policies from Android applications.<br><br>
  *
@@ -23,7 +25,7 @@ public class APCMain {
    *
    * @param args Command line arguments
    */
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) throws APCException {
     APCOptions options = CommandLineParser.parse(args);
   }
 
