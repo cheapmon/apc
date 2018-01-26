@@ -1,4 +1,4 @@
-package com.github.cheapmon.apc;
+package com.github.cheapmon.apc.util;
 
 import com.github.cheapmon.apc.failure.APCException;
 import com.github.cheapmon.apc.failure.SystemCallException;

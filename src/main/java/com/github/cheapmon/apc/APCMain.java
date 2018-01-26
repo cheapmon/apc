@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc;
 
 import com.github.cheapmon.apc.failure.APCException;
+import com.github.cheapmon.apc.util.CommandLineParser;
 
 /**
  * APC extracts privacy policies from Android applications.<br><br>

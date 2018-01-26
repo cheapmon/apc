@@ -1,5 +1,6 @@
-package com.github.cheapmon.apc;
+package com.github.cheapmon.apc.util;
 
+import com.github.cheapmon.apc.APCOptions;
 import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import com.github.cheapmon.apc.failure.APCException;
 import java.io.File;
