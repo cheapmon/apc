@@ -1,9 +1,9 @@
 package com.github.cheapmon.apc.util;
 
 import com.github.cheapmon.apc.APCOptions;
+import com.github.cheapmon.apc.APCOptions.Algorithm;
 import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import com.github.cheapmon.apc.failure.APCException;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,12 +47,12 @@ public class CommandLineParser {
       String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
-      String algorithmPath = getAlgorithmPath(cl.getOptionValue("search"));
+      Algorithm algorithm = getAlgorithm(cl.getOptionValue("search"));
       boolean rebuild = cl.hasOption("clean");
       options.setIds(ids);
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
-      options.setAlgorithmPath(algorithmPath);
+      options.setAlgorithm(algorithm);
       options.setRebuild(rebuild);
       APCLogger.info(CommandLineParser.class, "APC");
       APCLogger.space();
@@ -62,7 +62,7 @@ public class CommandLineParser {
           .info(CommandLineParser.class, String.format("* Extraction mode is %s", extractionMode));
       APCLogger.info(CommandLineParser.class, String.format("* Using device %s", device));
       APCLogger.info(CommandLineParser.class,
-          String.format("* Using %s", new File(algorithmPath).getName()));
+          String.format("* Using %s", algorithm));
       if (rebuild) {
         APCLogger.info(CommandLineParser.class, "* Clean and Rebuild");
       }
@@ -172,51 +172,29 @@ public class CommandLineParser {
   /**
    * Get search algorithm used when performing extraction.<br><br>
    *
-   * Input is an algorithm label, which is a short version of the simple class name of the
-   * algorithm. If none is given, defaults to optimized search. When the label is incorrect,
-   * APC halts.<br><br>
+   * Input is an algorithm label. If none is given, defaults to optimized search. When the label is
+   * incorrect, APC halts.
    *
-   * Short name of an algorithm is all capital letters in the filename. The full file path is
-   * returned.<br><br>
-   *
-   * Java modules can't be dependant on Android modules, so reflections or service loaders can't
-   * be used here. Simply searches the submodule for files with the correct file name. Please note
-   * that this is just a workaround and does not safely guarantee extensibility, since this won't
-   * check for correct implementations, etc.
-   *
-   * @param algorithmPath Algorithm label given by user
-   * @return Full path of algorithm chosen by APC
-   * @throws APCException Searching folders fails
+   * @param algorithmString Algorithm label given by user
+   * @return Algorithm label chosen by APC
    */
-  private static String getAlgorithmPath(String algorithmPath) throws APCException {
-    if (algorithmPath == null) {
-      return Paths
-          .get(".", "droid", "src", "androidTest", "java", "com", "github", "cheapmon", "apc",
-              "droid", "search", "OptimizedSearch.java").toAbsolutePath().toString();
-    }
-    try {
-      File[] files = Files.walk(Paths.get(".", "droid"))
-          .filter(file -> file.getFileName().toString().endsWith("Search.java"))
-          .map(path -> new File(path.toAbsolutePath().toString()))
-          .toArray(File[]::new);
-      for (File file : files) {
-        if (file.getName().replaceAll("[a-z\\.]+", "").toLowerCase()
-            .equalsIgnoreCase(algorithmPath)) {
-          return file.getAbsolutePath();
+  private static Algorithm getAlgorithm(String algorithmString) {
+    if (algorithmString == null) {
+      return Algorithm.OS;
+    } else {
+      for (Algorithm algorithm : Algorithm.values()) {
+        if (algorithmString.equalsIgnoreCase(algorithm.toString())) {
+          return algorithm;
         }
       }
       System.out.println("Given algorithm label is incorrect. Please check for errors.");
-      System.out.println("Available search algorithms:");
-      for (File file : files) {
-        String name = file.getName().replaceAll(".java", "");
-        String shortName = name.replaceAll("[a-z]+", "").toLowerCase();
-        System.out.println(String.format("* %-4s %s", shortName, name));
+      System.out.println("Available algorithms:");
+      for (Algorithm algorithm : Algorithm.values()) {
+        System.out.println(String.format("* %s", algorithm));
       }
       System.exit(0);
-    } catch (IOException ex) {
-      throw new APCException("Filtering submodule folders failed", ex);
     }
-    return "";
+    return Algorithm.OS;
   }
 
   /**

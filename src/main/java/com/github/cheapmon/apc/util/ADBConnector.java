@@ -148,7 +148,7 @@ public class ADBConnector {
     String runner = "com.github.cheapmon.apc.droid.test/android.support.test.runner.AndroidJUnitRunner";
     String ids = Stream.of(options.getIds()).collect(Collectors.joining(","));
     String mode = options.getExtractionMode().toString();
-    String algorithm = new File(options.getAlgorithmPath()).getName();
+    String algorithm = options.getAlgorithm().toString();
     APCLogger.info(ADBConnector.class, "Loading tests onto device");
     buildADB("shell", "am", "instrument", "-w", "-r",
         "-e", "ids", ids,

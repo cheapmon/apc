@@ -8,31 +8,38 @@ package com.github.cheapmon.apc;
 public class APCOptions {
 
   /**
-   * Mode of extraction. This will be either policy extraction or app model extraction.
+   * Mode of extraction. This will be either policy extraction or app model extraction
    */
   public enum ExtractionMode {
     POLICY, MODEL
   }
 
   /**
-   * List of applications to extract from.
+   * Search algorithms used by APC
+   */
+  public enum Algorithm {
+    BFS, DFS, RS, OS
+  }
+
+  /**
+   * List of applications to extract from
    */
   private String[] ids;
 
   /**
-   * Extraction mode for APC.
+   * Extraction mode for APC
    */
   private ExtractionMode extractionMode;
 
   /**
-   * Device extraction is run on.
+   * Device extraction is run on
    */
   private String device;
 
   /**
-   * Path to search algorithm class used to extract.
+   * Search algorithm used to extract
    */
-  private String algorithmPath;
+  private Algorithm algorithm;
 
   /**
    * Whether to rebuild test files
@@ -94,21 +101,21 @@ public class APCOptions {
   }
 
   /**
-   * Get path to search algorithm class in use.
+   * Get algorithm in use.
    *
-   * @return Path to chosen algorithm
+   * @return Chosen algorithm
    */
-  public String getAlgorithmPath() {
-    return this.algorithmPath;
+  public Algorithm getAlgorithm() {
+    return this.algorithm;
   }
 
   /**
-   * Set path to algorithm class to use.
+   * Set algorithm to use.
    *
-   * @param algorithmPath New path to algorithm class
+   * @param algorithm New algorithm
    */
-  public void setAlgorithmPath(String algorithmPath) {
-    this.algorithmPath = algorithmPath;
+  public void setAlgorithm(Algorithm algorithm) {
+    this.algorithm = algorithm;
   }
 
   /**
