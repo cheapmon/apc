@@ -57,12 +57,13 @@ public class CommandLineParser {
       APCLogger.info(CommandLineParser.class, "APC");
       APCLogger.space();
       APCLogger
-          .info(CommandLineParser.class, String.format("Found %s application ids", ids.length));
+          .info(CommandLineParser.class, String.format("* Found %s application ids", ids.length));
       APCLogger
-          .info(CommandLineParser.class, String.format("Extraction mode is %s", extractionMode));
-      APCLogger.info(CommandLineParser.class, String.format("Using device %s", device));
+          .info(CommandLineParser.class, String.format("* Extraction mode is %s", extractionMode));
+      APCLogger.info(CommandLineParser.class, String.format("* Using device %s", device));
       APCLogger.info(CommandLineParser.class,
-          String.format("Using %s", new File(algorithmPath).getName()));
+          String.format("* Using %s", new File(algorithmPath).getName()));
+      APCLogger.info(CommandLineParser.class, String.format("* Rebuild %s", rebuild));
       APCLogger.space();
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
