@@ -1,5 +1,6 @@
 package com.github.cheapmon.apc.util;
 
+import com.github.cheapmon.apc.APCOptions;
 import com.github.cheapmon.apc.failure.APCException;
 import com.github.cheapmon.apc.failure.SystemCallException;
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
@@ -136,6 +138,29 @@ public class ADBConnector {
   }
 
   /**
+   * Run APC tests on device.
+   *
+   * @param options Options for extraction
+   * @throws APCException Tests fail
+   */
+  public void runTests(APCOptions options) throws APCException {
+    String test = "com.github.cheapmon.apc.droid.DroidMain#main";
+    String runner = "com.github.cheapmon.apc.droid.test/android.support.test.runner.AndroidJUnitRunner";
+    String ids = Stream.of(options.getIds()).collect(Collectors.joining(","));
+    String mode = options.getExtractionMode().toString();
+    String algorithm = new File(options.getAlgorithmPath()).getName();
+    APCLogger.info(ADBConnector.class, "Loading tests onto device");
+    buildADB("shell", "am", "instrument", "-w", "-r",
+        "-e", "ids", ids,
+        "-e", "mode", mode,
+        "-e", "algorithm", algorithm,
+        "-e", "debug", "false",
+        "-e", "class", test, runner);
+    APCLogger.info(ADBConnector.class, "Finished");
+    APCLogger.space();
+  }
+
+  /**
    * Run ADB command on device.
    *
    * @param commands Android Debug Bridge commands to run
@@ -156,6 +181,7 @@ public class ADBConnector {
    * @throws APCException Building process fails
    */
   private static InputStream build(String... commands) throws APCException {
+    APCLogger.debug(ADBConnector.class, Stream.of(commands).collect(Collectors.joining(" ")));
     try {
       Process process = new ProcessBuilder(commands).start();
       InputStream output = process.getInputStream();
