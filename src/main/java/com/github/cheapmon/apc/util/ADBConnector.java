@@ -44,10 +44,9 @@ public class ADBConnector {
   /**
    * Build debugging and testing binary in Android submodule.
    */
-  public static void buildDroid() {
-    if (Files.exists(Paths.get(".", "droid", "build", "outputs", "apk", "droid-debug.apk"))) {
-      APCLogger.info(ADBConnector.class, "APK already built, skipping");
-    } else {
+  public static void buildDroid(boolean rebuild) {
+    if (rebuild || Files
+        .notExists(Paths.get(".", "droid", "build", "outputs", "apk", "droid-debug.apk"))) {
       ProjectConnection connection = GradleConnector.newConnector()
           .forProjectDirectory(new File("./droid")).connect();
       try {
@@ -56,6 +55,9 @@ public class ADBConnector {
         connection.close();
       }
       APCLogger.info(ADBConnector.class, "Successfully built APK");
+      APCLogger.space();
+    } else {
+      APCLogger.info(ADBConnector.class, "APK already built, skipping");
       APCLogger.space();
     }
   }

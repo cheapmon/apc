@@ -35,6 +35,11 @@ public class APCOptions {
   private String algorithmPath;
 
   /**
+   * Whether to rebuild test files
+   */
+  private boolean rebuild;
+
+  /**
    * Get all application IDs.
    *
    * @return IDs
@@ -104,6 +109,24 @@ public class APCOptions {
    */
   public void setAlgorithmPath(String algorithmPath) {
     this.algorithmPath = algorithmPath;
+  }
+
+  /**
+   * Get whether to rebuild.
+   *
+   * @return Rebuild or not
+   */
+  public boolean getRebuild() {
+    return this.rebuild;
+  }
+
+  /**
+   * Set whether to rebuild.
+   *
+   * @param rebuild Rebuild or not
+   */
+  public void setRebuild(boolean rebuild) {
+    this.rebuild = rebuild;
   }
 
 }

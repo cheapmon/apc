@@ -30,7 +30,7 @@ public class APCMain {
    */
   public static void main(String[] args) throws APCException {
     APCOptions options = CommandLineParser.parse(args);
-    ADBConnector.buildDroid();
+    ADBConnector.buildDroid(options.getRebuild());
   }
 
 }

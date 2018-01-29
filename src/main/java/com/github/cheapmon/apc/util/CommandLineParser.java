@@ -48,10 +48,12 @@ public class CommandLineParser {
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
       String algorithmPath = getAlgorithmPath(cl.getOptionValue("search"));
+      boolean rebuild = cl.hasOption("clean");
       options.setIds(ids);
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
       options.setAlgorithmPath(algorithmPath);
+      options.setRebuild(rebuild);
       APCLogger.info(CommandLineParser.class, "APC");
       APCLogger.space();
       APCLogger
@@ -83,6 +85,7 @@ public class CommandLineParser {
     options.addOption("d", "device", true, "Device to run extraction on");
     options.addOption("s", "search", true, "Searching algorithm");
     options.addOption("m", "extract-model", false, "Extract model of app");
+    options.addOption("c", "clean", false, "Rebuild tests");
     return options;
   }
 
