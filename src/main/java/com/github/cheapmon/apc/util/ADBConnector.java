@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
@@ -28,6 +29,32 @@ import org.gradle.tooling.ProjectConnection;
 public class ADBConnector {
 
   /**
+   * Path to Android submodule
+   */
+  private static final Path DROID = Paths.get(".", "droid");
+
+  /**
+   * Path to debug APK built by Android submodule
+   */
+  private static final Path DEBUG_APK = Paths
+      .get(".", "droid", "build", "outputs", "apk", "droid-debug.apk");
+
+  /**
+   * Path to test APK built by Android submodule
+   */
+  private static final Path TEST_APK = Paths
+      .get(".", "droid", "build", "outputs", "apk", "droid-debug-androidTest.apk");
+
+  /**
+   * Path to debug APK destination on remote device
+   */
+  private static final String DEBUG_DEST = "/data/local/tmp/com.github.cheapmon.apc.droid";
+
+  /**
+   * Path to test APK destination on remote device
+   */
+  private static final String TEST_DEST = "/data/local/tmp/com.github.cheapmon.apc.droid.test";
+
    * List all available Android (virtual) devices attached to the computer.<br><br>
    *
    * Note that this will only list devices that have Android debugging enabled.
@@ -45,10 +72,9 @@ public class ADBConnector {
    * Build debugging and testing binary in Android submodule.
    */
   public static void buildDroid(boolean rebuild) {
-    if (rebuild || Files
-        .notExists(Paths.get(".", "droid", "build", "outputs", "apk", "droid-debug.apk"))) {
+    if (rebuild || Files.notExists(DEBUG_APK)) {
       ProjectConnection connection = GradleConnector.newConnector()
-          .forProjectDirectory(new File("./droid")).connect();
+          .forProjectDirectory(new File(DROID.toAbsolutePath().toString())).connect();
       try {
         connection.newBuild().forTasks("assembleDebug", "assembleAndroidTest").run();
       } finally {
