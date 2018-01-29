@@ -52,6 +52,8 @@ public class CommandLineParser {
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
       options.setAlgorithmPath(algorithmPath);
+      APCLogger.info(CommandLineParser.class, "APC");
+      APCLogger.space();
       APCLogger
           .info(CommandLineParser.class, String.format("Found %s application ids", ids.length));
       APCLogger
@@ -59,6 +61,7 @@ public class CommandLineParser {
       APCLogger.info(CommandLineParser.class, String.format("Using device %s", device));
       APCLogger.info(CommandLineParser.class,
           String.format("Using %s", new File(algorithmPath).getName()));
+      APCLogger.space();
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
     }

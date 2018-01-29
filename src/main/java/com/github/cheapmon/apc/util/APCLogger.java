@@ -1,5 +1,6 @@
 package com.github.cheapmon.apc.util;
 
+import com.github.cheapmon.apc.APCMain;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -19,6 +20,10 @@ public class APCLogger {
    * List of loggers for different classes.
    */
   private static List<Logger> loggerList = new ArrayList<Logger>();
+
+  public static void space() {
+    info(APCMain.class, "----------------------------------------");
+  }
 
   /**
    * Write log for a given class, on the level INFO.
