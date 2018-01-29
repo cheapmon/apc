@@ -35,6 +35,10 @@ allprojects {
 android {
     buildToolsVersion '26.0.2'
     compileSdkVersion 26
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     defaultConfig {
         applicationId "com.github.cheapmon.apc.droid"
         minSdkVersion 18
@@ -42,6 +46,9 @@ android {
         versionCode 0
         versionName "0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        jackOptions {
+            enabled true
+        }
     }
     sourceSets {
         main {
