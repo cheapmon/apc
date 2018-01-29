@@ -63,7 +63,9 @@ public class CommandLineParser {
       APCLogger.info(CommandLineParser.class, String.format("* Using device %s", device));
       APCLogger.info(CommandLineParser.class,
           String.format("* Using %s", new File(algorithmPath).getName()));
-      APCLogger.info(CommandLineParser.class, String.format("* Rebuild %s", rebuild));
+      if (rebuild) {
+        APCLogger.info(CommandLineParser.class, "* Clean and Rebuild");
+      }
       APCLogger.space();
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
