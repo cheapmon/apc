@@ -108,6 +108,21 @@ public class ADBConnector {
   }
 
   /**
+   * Install required APC test files on device.
+   *
+   * @throws APCException Installation fails
+   */
+  public void install() throws APCException {
+    File debugAPK = new File(DEBUG_APK.toAbsolutePath().toString());
+    File testAPK = new File(TEST_APK.toAbsolutePath().toString());
+    buildADB("push", debugAPK.getAbsolutePath(), DEBUG_DEST);
+    buildADB("shell", "pm", "install", "-t", "-r", DEBUG_DEST);
+    buildADB("push", testAPK.getAbsolutePath(), TEST_DEST);
+    buildADB("shell", "pm", "install", "-t", "-r", TEST_DEST);
+    APCLogger.info(ADBConnector.class, String.format("Installed APK on device %s", this.device));
+    APCLogger.space();
+  }
+
   /**
    * Run ADB command on device.
    *

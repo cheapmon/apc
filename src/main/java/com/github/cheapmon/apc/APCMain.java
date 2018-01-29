@@ -32,6 +32,7 @@ public class APCMain {
     APCOptions options = CommandLineParser.parse(args);
     ADBConnector.buildDroid(options.getRebuild());
     ADBConnector connector = new ADBConnector(options.getDevice());
+    connector.install();
   }
 
 }
