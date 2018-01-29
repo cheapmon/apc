@@ -1,4 +1,4 @@
-package com.github.skwastaken.apc.droid.search;
+package com.github.cheapmon.apc.droid.search;
 
 public interface SearchingAlgorithm {
 
