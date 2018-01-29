@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
 
@@ -55,6 +57,21 @@ public class ADBConnector {
    */
   private static final String TEST_DEST = "/data/local/tmp/com.github.cheapmon.apc.droid.test";
 
+  /**
+   * Label of device for this connection
+   */
+  private final String device;
+
+  /**
+   * Connect to remote device.
+   *
+   * @param device Device label
+   */
+  public ADBConnector(String device) {
+    this.device = device;
+  }
+
+  /**
    * List all available Android (virtual) devices attached to the computer.<br><br>
    *
    * Note that this will only list devices that have Android debugging enabled.
@@ -70,6 +87,8 @@ public class ADBConnector {
 
   /**
    * Build debugging and testing binary in Android submodule.
+   *
+   * @param rebuild Whether to rebuild test files
    */
   public static void buildDroid(boolean rebuild) {
     if (rebuild || Files.notExists(DEBUG_APK)) {
@@ -86,6 +105,20 @@ public class ADBConnector {
       APCLogger.info(ADBConnector.class, "APK already built, skipping");
       APCLogger.space();
     }
+  }
+
+  /**
+  /**
+   * Run ADB command on device.
+   *
+   * @param commands Android Debug Bridge commands to run
+   * @return Output or error of finished process
+   * @throws APCException Building process fails
+   */
+  private InputStream buildADB(String... commands) throws APCException {
+    return build(Stream
+        .concat(Arrays.stream(new String[]{"adb", "-s", this.device}), Arrays.stream(commands))
+        .toArray(String[]::new));
   }
 
   /**
