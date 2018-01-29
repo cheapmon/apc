@@ -124,6 +124,18 @@ public class ADBConnector {
   }
 
   /**
+   * Remove APC files from device.
+   *
+   * @throws APCException Removing fails
+   */
+  public void remove() throws APCException {
+    buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid");
+    buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid.test");
+    APCLogger.info(ADBConnector.class, "Removed all APC files from device");
+    APCLogger.space();
+  }
+
+  /**
    * Run ADB command on device.
    *
    * @param commands Android Debug Bridge commands to run

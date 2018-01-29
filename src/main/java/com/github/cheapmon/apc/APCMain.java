@@ -33,6 +33,7 @@ public class APCMain {
     ADBConnector.buildDroid(options.getRebuild());
     ADBConnector connector = new ADBConnector(options.getDevice());
     connector.install();
+    connector.remove();
   }
 
 }
