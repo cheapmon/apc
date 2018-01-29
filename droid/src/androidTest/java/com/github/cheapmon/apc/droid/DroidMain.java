@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc.droid;
 
 import android.support.test.runner.AndroidJUnit4;
+import com.github.cheapmon.apc.droid.util.DroidLogger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,6 +23,7 @@ public class DroidMain {
    */
   @Test
   public void main() {
+    DroidLogger.log("Droid");
   }
 
 }

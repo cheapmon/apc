@@ -21,6 +21,9 @@ public class APCLogger {
    */
   private static List<Logger> loggerList = new ArrayList<Logger>();
 
+  /**
+   * Print break line to log.
+   */
   public static void space() {
     info(APCMain.class, "----------------------------------------");
   }
