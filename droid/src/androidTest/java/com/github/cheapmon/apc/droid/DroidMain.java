@@ -3,6 +3,8 @@ package com.github.cheapmon.apc.droid;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import com.github.cheapmon.apc.droid.search.AlgorithmHelper;
+import com.github.cheapmon.apc.droid.search.SearchingAlgorithm;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +41,9 @@ public class DroidMain {
    * Entry point for Droid pipeline. Check for arguments. Configure extraction.
    */
   @Test
-  public void main() {
+  public void main() throws IllegalAccessException, InstantiationException {
     parseCommands();
+    SearchingAlgorithm algorithm = AlgorithmHelper.get(this.algorithm).newInstance();
   }
 
   /**
