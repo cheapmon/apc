@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc;
 
 import com.github.cheapmon.apc.failure.APCException;
+import com.github.cheapmon.apc.util.ADBConnector;
 import com.github.cheapmon.apc.util.CommandLineParser;
 
 /**
@@ -29,6 +30,7 @@ public class APCMain {
    */
   public static void main(String[] args) throws APCException {
     APCOptions options = CommandLineParser.parse(args);
+    ADBConnector.buildDroid();
   }
 
 }

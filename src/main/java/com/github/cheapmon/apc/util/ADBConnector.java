@@ -3,9 +3,14 @@ package com.github.cheapmon.apc.util;
 import com.github.cheapmon.apc.failure.APCException;
 import com.github.cheapmon.apc.failure.SystemCallException;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import org.gradle.tooling.GradleConnector;
+import org.gradle.tooling.ProjectConnection;
 
 /**
  * Run commands on Android device by connecting to the Android Debug Bridge.<br><br>
@@ -34,6 +39,25 @@ public class ADBConnector {
     return new BufferedReader(new InputStreamReader(build("adb", "devices"))).lines().skip(1)
         .filter(line -> line.contains("device")).map(line -> line.split("\\s+")[0])
         .toArray(String[]::new);
+  }
+
+  /**
+   * Build debugging and testing binary in Android submodule.
+   */
+  public static void buildDroid() {
+    if (Files.exists(Paths.get(".", "droid", "build", "outputs", "apk", "droid-debug.apk"))) {
+      APCLogger.info(ADBConnector.class, "APK already built, skipping");
+    } else {
+      ProjectConnection connection = GradleConnector.newConnector()
+          .forProjectDirectory(new File("./droid")).connect();
+      try {
+        connection.newBuild().forTasks("assembleDebug", "assembleAndroidTest").run();
+      } finally {
+        connection.close();
+      }
+      APCLogger.info(ADBConnector.class, "Successfully built APK");
+      APCLogger.space();
+    }
   }
 
   /**
