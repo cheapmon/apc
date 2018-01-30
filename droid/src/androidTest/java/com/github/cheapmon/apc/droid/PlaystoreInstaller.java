@@ -10,10 +10,9 @@ import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
-import java.io.IOException;
 
 /**
- * Install Android application from Google Play.
+ * Install or remove Android application from Google Play.
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
@@ -32,18 +31,14 @@ public class PlaystoreInstaller {
    * Very basic approach. Click install buttons and give permissions. Fail on warning message.
    *
    * @param id App id
+   * @throws RemoteException Device communication fails
    */
-  public static InstallState install(String id) throws RemoteException, IOException {
+  public static InstallState install(String id) throws RemoteException {
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
+    openPlaystore(id);
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    if (!device.isScreenOn()) {
-      device.wakeUp();
-    }
-    Context context = InstrumentationRegistry.getContext();
-    context.startActivity(
-        new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("market://details?id=%s", id))));
     if (device.hasObject(By.res("com.android.vending:id/warning_message_module"))) {
       return InstallState.FAILURE;
     }
@@ -58,6 +53,43 @@ public class PlaystoreInstaller {
     }
     device.wait(Until.hasObject(buttonContainerSelector), 5000);
     return InstallState.SUCCESS;
+  }
+
+  /**
+   * Remove application.<br><br>
+   *
+   * Click uninstall button and confirm.
+   *
+   * @param id Application id
+   * @throws RemoteException Device communication fails
+   */
+  public static void remove(String id) throws RemoteException {
+    openPlaystore(id);
+    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    BySelector buttonContainerSelector = By.res("com.android.vending:id/button_container");
+    BySelector buttonPanelSelector = By.res("com.android.vending:id/buttonPanel");
+    device.findObject(buttonContainerSelector)
+        .findObject(By.clazz("android.widget.Button")).click();
+    device.wait(Until.hasObject(buttonPanelSelector), 5000);
+    device.findObject(buttonPanelSelector).findObject(By.res("android:id/button1")).click();
+    device.wait(Until.gone(buttonPanelSelector), 5000);
+    device.wait(Until.hasObject(buttonContainerSelector), 5000);
+  }
+
+  /**
+   * Open Google Play Page for application.
+   *
+   * @param id Application id
+   * @throws RemoteException Device communication fails
+   */
+  private static void openPlaystore(String id) throws RemoteException {
+    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    if (!device.isScreenOn()) {
+      device.wakeUp();
+    }
+    Context context = InstrumentationRegistry.getContext();
+    context.startActivity(
+        new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("market://details?id=%s", id))));
   }
 
   /**

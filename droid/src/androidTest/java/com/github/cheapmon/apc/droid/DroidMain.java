@@ -45,6 +45,7 @@ public class DroidMain {
     parseCommands();
     SearchingAlgorithm algorithm = AlgorithmHelper.get(this.algorithm).newInstance();
     DroidLogger.log(PlaystoreInstaller.install(ids[0]).toString());
+    PlaystoreInstaller.remove(ids[0]);
   }
 
   /**
