@@ -150,12 +150,14 @@ public class ADBConnector {
     String mode = options.getExtractionMode().toString();
     String algorithm = options.getAlgorithm().toString();
     APCLogger.info(ADBConnector.class, "Loading tests onto device");
-    buildADB("shell", "am", "instrument", "-w", "-r",
+    InputStream stream = buildADB("shell", "am", "instrument", "-w", "-r",
         "-e", "ids", ids,
         "-e", "mode", mode,
         "-e", "algorithm", algorithm,
         "-e", "debug", "false",
         "-e", "class", test, runner);
+    APCLogger.debug(ADBConnector.class, new BufferedReader(new InputStreamReader(stream)).lines()
+        .collect(Collectors.joining("\n")));
     APCLogger.info(ADBConnector.class, "Finished");
     APCLogger.space();
   }
