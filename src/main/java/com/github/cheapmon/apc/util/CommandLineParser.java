@@ -5,9 +5,12 @@ import com.github.cheapmon.apc.APCOptions.Algorithm;
 import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import com.github.cheapmon.apc.failure.APCException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -44,7 +47,7 @@ public class CommandLineParser {
       if (cl.hasOption("help")) {
         printUsage();
       }
-      String[] ids = getIDs(cl.getOptionValues("id"), cl.getOptionValue("file"));
+      String[] ids = filterIDs(getIDs(cl.getOptionValues("id"), cl.getOptionValue("file")));
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
       Algorithm algorithm = getAlgorithm(cl.getOptionValue("search"));
@@ -61,11 +64,11 @@ public class CommandLineParser {
       APCLogger
           .info(CommandLineParser.class, String.format("* Extraction mode is %s", extractionMode));
       APCLogger.info(CommandLineParser.class, String.format("* Using device %s", device));
-      APCLogger.info(CommandLineParser.class,
-          String.format("* Using %s", algorithm));
+      APCLogger.info(CommandLineParser.class, String.format("* Using %s", algorithm));
       if (rebuild) {
         APCLogger.info(CommandLineParser.class, "* Clean and Rebuild");
       }
+      APCLogger.debug(CommandLineParser.class, Arrays.toString(ids));
       APCLogger.space();
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
@@ -119,6 +122,37 @@ public class CommandLineParser {
       }
     }
     return new String[0];
+  }
+
+  /**
+   * Remove incorrect labels from list of applications.<br><br>
+   *
+   * Send GET request to Google Play and check response code.
+   *
+   * @param ids App ids
+   * @return Filtered list
+   */
+  private static String[] filterIDs(String[] ids) {
+    ids = Stream.of(ids).filter(id -> {
+      try {
+        String USER_AGENT = "Mozilla/5.0";
+        String url = String.format("https://play.google.com/store/apps/details?id=%s", id);
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("User-Agent", USER_AGENT);
+        APCLogger.debug(CommandLineParser.class, url);
+        APCLogger.debug(CommandLineParser.class, String.valueOf(con.getResponseCode()));
+        return con.getResponseCode() == 200;
+      } catch (IOException ex) {
+        APCLogger.debug(CommandLineParser.class, ex.getMessage());
+        return false;
+      }
+    }).toArray(String[]::new);
+    if (ids.length == 0) {
+      printUsage("Please supply at least one correct application id.");
+    }
+    return ids;
   }
 
   /**
