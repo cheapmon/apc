@@ -41,9 +41,10 @@ public class DroidMain {
    * Entry point for Droid pipeline. Check for arguments. Configure extraction.
    */
   @Test
-  public void main() throws IllegalAccessException, InstantiationException {
+  public void main() throws Exception {
     parseCommands();
     SearchingAlgorithm algorithm = AlgorithmHelper.get(this.algorithm).newInstance();
+    DroidLogger.log(PlaystoreInstaller.install(ids[0]).toString());
   }
 
   /**
