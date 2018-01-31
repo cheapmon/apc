@@ -6,15 +6,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.By;
-import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.github.cheapmon.apc.droid.util.CrawlHelper;
 
 /**
  * Install or remove Android application from Google Play.
@@ -29,6 +23,11 @@ public class PlaystoreInstaller {
   public enum InstallState {
     ALREADY_INSTALLED, FAILURE, SUCCESS
   }
+
+  /**
+   * Crawl helper for this class
+   */
+  private static CrawlHelper crawlHelper = new CrawlHelper();
 
   /**
    * Default timeout for actions on device.
@@ -51,65 +50,56 @@ public class PlaystoreInstaller {
    * @throws RemoteException Device communication fails
    */
   public static InstallState install(String id) throws RemoteException {
-    BySelector warningMessage = By.res("com.android.vending:id/warning_message_module");
-    BySelector wifiMessage = By.res("com.android.vending:id/wifi_message");
-    BySelector installMessage = By.res("com.android.vending:id/summary_dynamic_status")
-        .clazz("android.widget.TextView");
-    BySelector message = By.res("android:id/message");
-    BySelector buttonContainer = By.res("com.android.vending:id/button_container");
-    BySelector buttonPanel = By.res("com.android.vending:id/buttonPanel");
-    BySelector downloadPanel = By.res("com.android.vending:id/download_progress_panel");
-    BySelector appPermissions = By.res("com.android.vending:id/app_permissions");
-    BySelector continueBar = By.res("com.android.vending:id/continue_button_bar");
-    BySelector continueButton = By.res("com.android.vending:id/continue_button");
-    BySelector skipButton = By.res("com.android.vending:id/not_now_button");
-    BySelector button = By.clazz("android.widget.Button");
-    BySelector firstButton = By.res("android:id/button1");
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
     openPlaystore(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    if (device.hasObject(warningMessage)) {
+    if (device.hasObject(crawlHelper.getGooglePlayContainer("warningMessage"))) {
       return InstallState.FAILURE;
     }
-    device.wait(Until.hasObject(buttonContainer), TIMEOUT);
-    device.findObject(buttonContainer).findObject(button).click();
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
+    device.findObject(crawlHelper.getGooglePlayContainer("buttonContainer"))
+        .findObject(crawlHelper.getGooglePlayContainer("button")).click();
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.gone(buttonContainer), TIMEOUT);
-    if (device.hasObject(wifiMessage)) {
-      device.findObject(buttonPanel).findObject(firstButton).click();
+    device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
+    if (device.hasObject(crawlHelper.getGooglePlayContainer("wifiMessage"))) {
+      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
+          .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
       device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(wifiMessage), TIMEOUT);
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("wifiMessage")), TIMEOUT);
     }
-    if (device.hasObject(buttonPanel)) {
-      device.findObject(buttonPanel).findObject(button).click();
+    if (device.hasObject(crawlHelper.getGooglePlayContainer("buttonPanel"))) {
+      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
+          .findObject(crawlHelper.getGooglePlayContainer("button")).click();
       device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.hasObject(skipButton), TIMEOUT);
-      device.findObject(skipButton).click();
+      device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("skipButton")), TIMEOUT);
+      device.findObject(crawlHelper.getGooglePlayContainer("skipButton")).click();
       device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(buttonPanel), TIMEOUT);
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
     }
-    if (device.hasObject(appPermissions)) {
-      device.findObject(continueBar).findObject(continueButton).click();
+    if (device.hasObject(crawlHelper.getGooglePlayContainer("appPermissions"))) {
+      device.findObject(crawlHelper.getGooglePlayContainer("continueBar"))
+          .findObject(crawlHelper.getGooglePlayContainer("continueButton")).click();
       device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(appPermissions), TIMEOUT);
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("appPermissions")), TIMEOUT);
     }
-    device.wait(Until.hasObject(downloadPanel), TIMEOUT);
-    while (device.hasObject(downloadPanel)) {
-      device.wait(Until.gone(downloadPanel), TIMEOUT);
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("downloadPanel")), TIMEOUT);
+    while (device.hasObject(crawlHelper.getGooglePlayContainer("downloadPanel"))) {
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("downloadPanel")), TIMEOUT);
     }
-    while (device.hasObject(installMessage)) {
-      device.wait(Until.gone(installMessage), TIMEOUT);
+    while (device.hasObject(crawlHelper.getGooglePlayContainer("installMessage"))) {
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("installMessage")), TIMEOUT);
     }
-    if (device.hasObject(message)) {
-      device.findObject(buttonPanel).findObject(firstButton).click();
+    if (device.hasObject(crawlHelper.getGooglePlayContainer("message"))) {
+      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
+          .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
       device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(message), TIMEOUT);
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
       return InstallState.FAILURE;
     }
-    device.wait(Until.hasObject(buttonContainer), TIMEOUT);
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
     return InstallState.SUCCESS;
   }
 
@@ -122,26 +112,23 @@ public class PlaystoreInstaller {
    * @throws RemoteException Device communication fails
    */
   public static void remove(String id) throws RemoteException {
-    BySelector message = By.res("android:id/message");
-    BySelector buttonContainer = By.res("com.android.vending:id/button_container");
-    BySelector buttonPanel = By.res("com.android.vending:id/buttonPanel");
-    BySelector button = By.clazz("android.widget.Button");
-    BySelector firstButton = By.res("android:id/button1");
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     openPlaystore(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.hasObject(buttonContainer), TIMEOUT);
-    device.findObject(buttonContainer).findObject(button).click();
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
+    device.findObject(crawlHelper.getGooglePlayContainer("buttonContainer"))
+        .findObject(crawlHelper.getGooglePlayContainer("button")).click();
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.hasObject(buttonPanel), TIMEOUT);
-    device.findObject(buttonPanel).findObject(firstButton).click();
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
+    device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
+        .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.gone(buttonPanel), TIMEOUT);
-    device.wait(Until.hasObject(message), TIMEOUT);
-    while (device.hasObject(message)) {
-      device.wait(Until.gone(message), TIMEOUT);
+    device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
+    while (device.hasObject(crawlHelper.getGooglePlayContainer("message"))) {
+      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
     }
-    device.wait(Until.hasObject(buttonContainer), TIMEOUT);
+    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
   }
 
   /**
