@@ -76,6 +76,17 @@ public class GooglePlayHelper {
   }
 
   /**
+   * Wait until certain container is gone.
+   *
+   * @param container Container
+   */
+  public void waitUntilGone(String container) {
+    while (device.hasObject(getContainer(container))) {
+      device.wait(Until.gone(getContainer(container)), TIMEOUT);
+    }
+  }
+
+  /**
    * Get an UI container by name.
    *
    * @param name Name of UI container

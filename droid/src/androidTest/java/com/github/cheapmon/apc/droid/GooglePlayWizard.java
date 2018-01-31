@@ -67,13 +67,8 @@ public class GooglePlayWizard {
     if (device.hasObject(g.getContainer("appPermissions"))) {
       g.click("appPermissions", "continueBar", "continueButton");
     }
-    device.wait(Until.hasObject(g.getContainer("downloadPanel")), TIMEOUT);
-    while (device.hasObject(g.getContainer("downloadPanel"))) {
-      device.wait(Until.gone(g.getContainer("downloadPanel")), TIMEOUT);
-    }
-    while (device.hasObject(g.getContainer("installMessage"))) {
-      device.wait(Until.gone(g.getContainer("installMessage")), TIMEOUT);
-    }
+    g.waitUntilGone("downloadPanel");
+    g.waitUntilGone("installMessage");
     if (device.hasObject(g.getContainer("message"))) {
       g.click("buttonPanel", "firstButton");
       return InstallState.FAILURE;
@@ -96,10 +91,7 @@ public class GooglePlayWizard {
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
-    device.wait(Until.hasObject(g.getContainer("message")), TIMEOUT);
-    while (device.hasObject(g.getContainer("message"))) {
-      device.wait(Until.gone(g.getContainer("message")), TIMEOUT);
-    }
+    g.waitUntilGone("message");
     device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
   }
 
