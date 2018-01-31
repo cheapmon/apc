@@ -27,7 +27,7 @@ public class PlaystoreInstaller {
   /**
    * Crawl helper for this class
    */
-  private static CrawlHelper crawlHelper = new CrawlHelper();
+  private static CrawlHelper g = new CrawlHelper();
 
   /**
    * Default timeout for actions on device.
@@ -56,50 +56,32 @@ public class PlaystoreInstaller {
     }
     openPlaystore(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    if (device.hasObject(crawlHelper.getGooglePlayContainer("warningMessage"))) {
+    if (device.hasObject(g.getContainer("warningMessage"))) {
       return InstallState.FAILURE;
     }
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
-    device.findObject(crawlHelper.getGooglePlayContainer("buttonContainer"))
-        .findObject(crawlHelper.getGooglePlayContainer("button")).click();
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
-    if (device.hasObject(crawlHelper.getGooglePlayContainer("wifiMessage"))) {
-      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
-          .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
-      device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("wifiMessage")), TIMEOUT);
+    g.click("buttonContainer", "button");
+    if (device.hasObject(g.getContainer("wifiMessage"))) {
+      g.click("buttonPanel", "firstButton");
     }
-    if (device.hasObject(crawlHelper.getGooglePlayContainer("buttonPanel"))) {
-      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
-          .findObject(crawlHelper.getGooglePlayContainer("button")).click();
-      device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("skipButton")), TIMEOUT);
-      device.findObject(crawlHelper.getGooglePlayContainer("skipButton")).click();
-      device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
+    if (device.hasObject(g.getContainer("buttonPanel"))) {
+      g.click("buttonPanel", "button");
+      g.click("skipButton");
     }
-    if (device.hasObject(crawlHelper.getGooglePlayContainer("appPermissions"))) {
-      device.findObject(crawlHelper.getGooglePlayContainer("continueBar"))
-          .findObject(crawlHelper.getGooglePlayContainer("continueButton")).click();
-      device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("appPermissions")), TIMEOUT);
+    if (device.hasObject(g.getContainer("appPermissions"))) {
+      g.click("appPermissions", "continueBar", "continueButton");
     }
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("downloadPanel")), TIMEOUT);
-    while (device.hasObject(crawlHelper.getGooglePlayContainer("downloadPanel"))) {
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("downloadPanel")), TIMEOUT);
+    device.wait(Until.hasObject(g.getContainer("downloadPanel")), TIMEOUT);
+    while (device.hasObject(g.getContainer("downloadPanel"))) {
+      device.wait(Until.gone(g.getContainer("downloadPanel")), TIMEOUT);
     }
-    while (device.hasObject(crawlHelper.getGooglePlayContainer("installMessage"))) {
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("installMessage")), TIMEOUT);
+    while (device.hasObject(g.getContainer("installMessage"))) {
+      device.wait(Until.gone(g.getContainer("installMessage")), TIMEOUT);
     }
-    if (device.hasObject(crawlHelper.getGooglePlayContainer("message"))) {
-      device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
-          .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
-      device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
+    if (device.hasObject(g.getContainer("message"))) {
+      g.click("buttonPanel", "firstButton");
       return InstallState.FAILURE;
     }
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
+    device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
     return InstallState.SUCCESS;
   }
 
@@ -115,20 +97,13 @@ public class PlaystoreInstaller {
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     openPlaystore(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
-    device.findObject(crawlHelper.getGooglePlayContainer("buttonContainer"))
-        .findObject(crawlHelper.getGooglePlayContainer("button")).click();
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
-    device.findObject(crawlHelper.getGooglePlayContainer("buttonPanel"))
-        .findObject(crawlHelper.getGooglePlayContainer("firstButton")).click();
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.gone(crawlHelper.getGooglePlayContainer("buttonPanel")), TIMEOUT);
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
-    while (device.hasObject(crawlHelper.getGooglePlayContainer("message"))) {
-      device.wait(Until.gone(crawlHelper.getGooglePlayContainer("message")), TIMEOUT);
+    g.click("buttonContainer", "button");
+    g.click("buttonPanel", "firstButton");
+    device.wait(Until.hasObject(g.getContainer("message")), TIMEOUT);
+    while (device.hasObject(g.getContainer("message"))) {
+      device.wait(Until.gone(g.getContainer("message")), TIMEOUT);
     }
-    device.wait(Until.hasObject(crawlHelper.getGooglePlayContainer("buttonContainer")), TIMEOUT);
+    device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
   }
 
   /**

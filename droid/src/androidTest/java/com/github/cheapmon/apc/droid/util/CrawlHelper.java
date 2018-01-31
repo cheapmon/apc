@@ -1,7 +1,11 @@
 package com.github.cheapmon.apc.droid.util;
 
+import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
+import android.support.test.uiautomator.Until;
 import java.util.HashMap;
 
 /**
@@ -12,15 +16,46 @@ import java.util.HashMap;
 public class CrawlHelper {
 
   /**
+   * Device to interact with
+   */
+  private UiDevice device;
+
+  /**
    * Set of common UI containers
    */
   private HashMap<String, BySelector> containers;
 
   /**
+   * Default timeout for actions on device
+   */
+  private final int TIMEOUT = 1000;
+
+  /**
    * Create new helper.
    */
   public CrawlHelper() {
-    initGooglePlayContainers();
+    device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    initContainers();
+  }
+
+  /**
+   * Click container and wait until action is finished.
+   *
+   * @param containers Chain of containers, last one will be clicked
+   */
+  public void click(String... containers) {
+    device.wait(Until.gone(getContainer(containers[0])), TIMEOUT);
+    UiObject2 objectToClick = null;
+    for (String container : containers) {
+      if (objectToClick == null) {
+        objectToClick = device.findObject(getContainer(container));
+      } else {
+        objectToClick = objectToClick.findObject(getContainer(container));
+      }
+    }
+    objectToClick.click();
+    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
+    device.wait(Until.gone(getContainer(containers[0])), TIMEOUT);
   }
 
   /**
@@ -29,14 +64,14 @@ public class CrawlHelper {
    * @param name Name of UI container
    * @return Container
    */
-  public BySelector getGooglePlayContainer(String name) {
+  public BySelector getContainer(String name) {
     return containers.get(name);
   }
 
   /**
    * Init common containers used by the Google Play app.
    */
-  private void initGooglePlayContainers() {
+  private void initContainers() {
     containers = new HashMap<>();
     containers.put("warningMessage", By.res("com.android.vending:id/warning_message_module"));
     containers.put("wifiMessage", By.res("com.android.vending:id/wifi_message"));
