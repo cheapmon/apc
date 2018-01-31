@@ -1,9 +1,6 @@
 package com.github.cheapmon.apc.droid;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
@@ -54,7 +51,7 @@ public class GooglePlayWizard {
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
-    openPlaystore(id);
+    g.start(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
     if (device.hasObject(g.getContainer("warningMessage"))) {
       return InstallState.FAILURE;
@@ -95,7 +92,7 @@ public class GooglePlayWizard {
    */
   public static void remove(String id) throws RemoteException {
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    openPlaystore(id);
+    g.start(id);
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
@@ -104,22 +101,6 @@ public class GooglePlayWizard {
       device.wait(Until.gone(g.getContainer("message")), TIMEOUT);
     }
     device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
-  }
-
-  /**
-   * Open Google Play Page for application.
-   *
-   * @param id Application id
-   * @throws RemoteException Device communication fails
-   */
-  private static void openPlaystore(String id) throws RemoteException {
-    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    if (!device.isScreenOn()) {
-      device.wakeUp();
-    }
-    Context context = InstrumentationRegistry.getContext();
-    context.startActivity(
-        new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("market://details?id=%s", id))));
   }
 
   /**

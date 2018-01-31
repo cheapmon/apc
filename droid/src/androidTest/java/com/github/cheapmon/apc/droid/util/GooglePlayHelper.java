@@ -1,5 +1,8 @@
 package com.github.cheapmon.apc.droid.util;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
@@ -36,6 +39,20 @@ public class GooglePlayHelper {
   public GooglePlayHelper() {
     device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     initContainers();
+  }
+
+  /**
+   * Open Google Play page for application.
+   *
+   * @param id Application id
+   * @throws RemoteException Device communication fails
+   */
+  public void start(String id) throws RemoteException {
+    if (!device.isScreenOn()) {
+      device.wakeUp();
+    }
+    InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
+        Uri.parse(String.format("market://details?id=%s", id))));
   }
 
   /**
