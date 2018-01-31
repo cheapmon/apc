@@ -53,6 +53,7 @@ public class GooglePlayHelper {
     }
     InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
         Uri.parse(String.format("market://details?id=%s", id))));
+    waitForChange();
   }
 
   /**
@@ -61,18 +62,34 @@ public class GooglePlayHelper {
    * @param containers Chain of containers, last one will be clicked
    */
   public void click(String... containers) {
-    device.wait(Until.gone(getContainer(containers[0])), TIMEOUT);
+    waitUntilHas(containers[0]);
     UiObject2 objectToClick = null;
     for (String container : containers) {
       if (objectToClick == null) {
-        objectToClick = device.findObject(getContainer(container));
+        objectToClick = device.findObject(this.containers.get(container));
       } else {
-        objectToClick = objectToClick.findObject(getContainer(container));
+        objectToClick = objectToClick.findObject(this.containers.get(container));
       }
     }
     objectToClick.click();
+    waitForChange();
+    waitUntilGone(containers[0]);
+  }
+
+  /**
+   * Wait until the screen has changed.
+   */
+  public void waitForChange() {
     device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    device.wait(Until.gone(getContainer(containers[0])), TIMEOUT);
+  }
+
+  /**
+   * Wait until certain container has appeared.
+   *
+   * @param container Container
+   */
+  public void waitUntilHas(String container) {
+    device.wait(Until.hasObject(this.containers.get(container)), TIMEOUT);
   }
 
   /**
@@ -81,19 +98,19 @@ public class GooglePlayHelper {
    * @param container Container
    */
   public void waitUntilGone(String container) {
-    while (device.hasObject(getContainer(container))) {
-      device.wait(Until.gone(getContainer(container)), TIMEOUT);
+    while (device.hasObject(this.containers.get(container))) {
+      device.wait(Until.gone(this.containers.get(container)), TIMEOUT);
     }
   }
 
   /**
-   * Get an UI container by name.
+   * Check if container exists in UI.
    *
-   * @param name Name of UI container
-   * @return Container
+   * @param container Container to check
+   * @return Whether or not the container exists
    */
-  public BySelector getContainer(String name) {
-    return containers.get(name);
+  public boolean has(String container) {
+    return device.hasObject(this.containers.get(container));
   }
 
   /**

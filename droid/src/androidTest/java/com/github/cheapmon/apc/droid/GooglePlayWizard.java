@@ -3,8 +3,6 @@ package com.github.cheapmon.apc.droid;
 import android.content.pm.PackageManager;
 import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
-import android.support.test.uiautomator.Until;
 import com.github.cheapmon.apc.droid.util.GooglePlayHelper;
 
 /**
@@ -27,11 +25,6 @@ public class GooglePlayWizard {
   private static GooglePlayHelper g = new GooglePlayHelper();
 
   /**
-   * Default timeout for actions on device.
-   */
-  private static final int TIMEOUT = 1000;
-
-  /**
    * Install application.<br><br>
    *
    * <ul>
@@ -47,33 +40,31 @@ public class GooglePlayWizard {
    * @throws RemoteException Device communication fails
    */
   public static InstallState install(String id) throws RemoteException {
-    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
     g.start(id);
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
-    if (device.hasObject(g.getContainer("warningMessage"))) {
+    if (g.has("warningMessage")) {
       return InstallState.FAILURE;
     }
     g.click("buttonContainer", "button");
-    if (device.hasObject(g.getContainer("wifiMessage"))) {
+    if (g.has("wifiMessage")) {
       g.click("buttonPanel", "firstButton");
     }
-    if (device.hasObject(g.getContainer("buttonPanel"))) {
+    if (g.has("buttonPanel")) {
       g.click("buttonPanel", "button");
       g.click("skipButton");
     }
-    if (device.hasObject(g.getContainer("appPermissions"))) {
+    if (g.has("appPermissions")) {
       g.click("appPermissions", "continueBar", "continueButton");
     }
     g.waitUntilGone("downloadPanel");
     g.waitUntilGone("installMessage");
-    if (device.hasObject(g.getContainer("message"))) {
+    if (g.has("message")) {
       g.click("buttonPanel", "firstButton");
       return InstallState.FAILURE;
     }
-    device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
+    g.waitUntilHas("buttonContainer");
     return InstallState.SUCCESS;
   }
 
@@ -86,13 +77,11 @@ public class GooglePlayWizard {
    * @throws RemoteException Device communication fails
    */
   public static void remove(String id) throws RemoteException {
-    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     g.start(id);
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
     g.waitUntilGone("message");
-    device.wait(Until.hasObject(g.getContainer("buttonContainer")), TIMEOUT);
+    g.waitUntilHas("buttonContainer");
   }
 
   /**
