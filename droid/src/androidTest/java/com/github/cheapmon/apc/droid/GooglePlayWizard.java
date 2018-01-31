@@ -8,14 +8,14 @@ import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.Until;
-import com.github.cheapmon.apc.droid.util.CrawlHelper;
+import com.github.cheapmon.apc.droid.util.GooglePlayHelper;
 
 /**
  * Install or remove Android application from Google Play.
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
-public class PlaystoreInstaller {
+public class GooglePlayWizard {
 
   /**
    * State after execution
@@ -27,7 +27,7 @@ public class PlaystoreInstaller {
   /**
    * Crawl helper for this class
    */
-  private static CrawlHelper g = new CrawlHelper();
+  private static GooglePlayHelper g = new GooglePlayHelper();
 
   /**
    * Default timeout for actions on device.

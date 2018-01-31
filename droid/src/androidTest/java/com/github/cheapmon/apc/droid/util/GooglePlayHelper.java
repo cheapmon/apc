@@ -13,7 +13,7 @@ import java.util.HashMap;
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
-public class CrawlHelper {
+public class GooglePlayHelper {
 
   /**
    * Device to interact with
@@ -33,7 +33,7 @@ public class CrawlHelper {
   /**
    * Create new helper.
    */
-  public CrawlHelper() {
+  public GooglePlayHelper() {
     device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     initContainers();
   }
