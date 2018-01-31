@@ -17,3 +17,7 @@ local.properties
 
 # Log files
 *.log
+
+# Dumps and help files
+window_dump.xml
+*.txt
