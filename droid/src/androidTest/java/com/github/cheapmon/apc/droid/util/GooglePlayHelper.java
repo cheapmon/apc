@@ -59,17 +59,7 @@ public class GooglePlayHelper {
    */
   public void start(String id) throws DroidException {
     try {
-      reloadCount++;
-      if (reloadCount >= RELOAD_TIMEOUT) {
-        device.pressRecentApps();
-        device.waitForWindowUpdate(null, TIMEOUT);
-        device.findObject(By.res("com.android.systemui:id/button")).click();
-        device.waitForWindowUpdate(null, TIMEOUT);
-        reloadCount = 0;
-      }
-      if (!device.isScreenOn()) {
-        device.wakeUp();
-      }
+      reload();
     } catch (RemoteException ex) {
       throw new DroidException("Device communication failed", ex);
     }
@@ -133,6 +123,22 @@ public class GooglePlayHelper {
    */
   public boolean has(String container) {
     return device.hasObject(this.containers.get(container));
+  }
+
+  /**
+   * Reload device after certain number of starts.
+   *
+   * @throws RemoteException Device communication fails
+   */
+  private void reload() throws RemoteException {
+    reloadCount++;
+    if (reloadCount >= RELOAD_TIMEOUT) {
+      device.pressRecentApps();
+      device.waitForWindowUpdate(null, TIMEOUT);
+      device.findObject(By.res("com.android.systemui:id/button")).click();
+      device.waitForWindowUpdate(null, TIMEOUT);
+      reloadCount = 0;
+    }
   }
 
   /**
