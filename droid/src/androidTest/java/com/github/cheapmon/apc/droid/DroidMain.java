@@ -3,9 +3,12 @@ package com.github.cheapmon.apc.droid;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import com.github.cheapmon.apc.droid.search.AlgorithmHelper;
-import com.github.cheapmon.apc.droid.search.SearchingAlgorithm;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -51,9 +54,9 @@ public class DroidMain {
   /**
    * Parse arguments given to Droid.
    */
-  private void parseCommands() {
+  private void parseCommands() throws FileNotFoundException {
     Bundle extras = InstrumentationRegistry.getArguments();
-    this.ids = extras.getString("ids", "").split(",");
+    this.ids = readIDFile(extras.getString("file"));
     this.mode = extras.getString("mode");
     this.algorithm = extras.getString("algorithm");
     DroidLogger.log("Droid");
@@ -65,6 +68,23 @@ public class DroidMain {
     DroidLogger.log(String.format("Extraction mode is %s", this.mode));
     DroidLogger.log(String.format("Using %s", this.algorithm));
     DroidLogger.space();
+  }
+
+  /**
+   * Read ids from id file.
+   *
+   * @param pathToFile Path to file
+   * @return Application IDs
+   * @throws FileNotFoundException File read fails
+   */
+  private String[] readIDFile(String pathToFile) throws FileNotFoundException {
+    Scanner scanner = new Scanner(new FileReader(pathToFile));
+    StringBuilder builder = new StringBuilder();
+    while (scanner.hasNext()) {
+      builder.append(scanner.next()).append("\n");
+    }
+    scanner.close();
+    return builder.toString().split("\n");
   }
 
 }

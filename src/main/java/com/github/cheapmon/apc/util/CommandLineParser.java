@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
@@ -47,20 +49,20 @@ public class CommandLineParser {
       if (cl.hasOption("help")) {
         printUsage();
       }
-      String[] ids = filterIDs(getIDs(cl.getOptionValues("id"), cl.getOptionValue("file")));
+      Path file = getFile(cl.getOptionValues("id"), cl.getOptionValue("file"));
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
       Algorithm algorithm = getAlgorithm(cl.getOptionValue("search"));
       boolean rebuild = cl.hasOption("clean");
-      options.setIds(ids);
+      options.setFile(file);
       options.setExtractionMode(extractionMode);
       options.setDevice(device);
       options.setAlgorithm(algorithm);
       options.setRebuild(rebuild);
       APCLogger.info(CommandLineParser.class, "APC");
       APCLogger.space();
-      APCLogger
-          .info(CommandLineParser.class, String.format("* Found %s application ids", ids.length));
+      APCLogger.info(CommandLineParser.class, String.format("* Found %s application ids",
+          Files.lines(file).count()));
       APCLogger
           .info(CommandLineParser.class, String.format("* Extraction mode is %s", extractionMode));
       APCLogger.info(CommandLineParser.class, String.format("* Using device %s", device));
@@ -68,10 +70,11 @@ public class CommandLineParser {
       if (rebuild) {
         APCLogger.info(CommandLineParser.class, "* Clean and Rebuild");
       }
-      APCLogger.debug(CommandLineParser.class, Arrays.toString(ids));
       APCLogger.space();
     } catch (ParseException ex) {
       printUsage(ex.getMessage());
+    } catch (IOException ex) {
+      throw new APCException("Reading file size failed", ex);
     }
     return options;
   }
@@ -107,21 +110,24 @@ public class CommandLineParser {
    * @param file Given file containing ids
    * @return IDs of apps to crawl
    */
-  private static String[] getIDs(String[] ids, String file) {
+  private static Path getFile(String[] ids, String file) throws APCException {
     if (file == null) {
       if (ids == null) {
         printUsage("Please supply at least one application id.");
+        return null;
       } else {
-        return ids;
+        ids = filterIDs(ids);
+        Path newFile = Paths.get(".", "ids.txt");
+        try {
+          Files.write(newFile, Stream.of(ids).collect(Collectors.joining("\n")).getBytes());
+        } catch (IOException ex) {
+          throw new APCException("Reading id file failed", ex);
+        }
+        return newFile;
       }
     } else {
-      try {
-        return Files.readAllLines(Paths.get(file)).toArray(new String[0]);
-      } catch (IOException ex) {
-        printUsage("Could not read ID file. Please check for errors.");
-      }
+      return Paths.get(file);
     }
-    return new String[0];
   }
 
   /**

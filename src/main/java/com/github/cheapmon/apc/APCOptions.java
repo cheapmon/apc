@@ -1,5 +1,7 @@
 package com.github.cheapmon.apc;
 
+import java.nio.file.Path;
+
 /**
  * Save settings for extraction.
  *
@@ -24,7 +26,7 @@ public class APCOptions {
   /**
    * List of applications to extract from
    */
-  private String[] ids;
+  private Path file;
 
   /**
    * Extraction mode for APC
@@ -47,21 +49,21 @@ public class APCOptions {
   private boolean rebuild;
 
   /**
-   * Get all application IDs.
+   * Get path to file with application IDs.
    *
-   * @return IDs
+   * @return Path to file
    */
-  public String[] getIds() {
-    return this.ids;
+  public Path getFile() {
+    return this.file;
   }
 
   /**
-   * Set application IDs.
+   * Set path to file with application IDs.
    *
-   * @param ids New IDs
+   * @param file Path to file
    */
-  public void setIds(String[] ids) {
-    this.ids = ids;
+  public void setFile(Path file) {
+    this.file = file;
   }
 
   /**

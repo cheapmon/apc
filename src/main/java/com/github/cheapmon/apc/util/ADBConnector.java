@@ -60,6 +60,11 @@ public class ADBConnector {
   private static final String TEST_DEST = "/data/local/tmp/com.github.cheapmon.apc.droid.test";
 
   /**
+   * Path to id file on remote device
+   */
+  private static final String ID_FILE = "/data/local/tmp/ids.txt";
+
+  /**
    * Label of device for this connection
    */
   private final String device;
@@ -146,16 +151,25 @@ public class ADBConnector {
   public void runTests(APCOptions options) throws APCException {
     String test = "com.github.cheapmon.apc.droid.DroidMain#main";
     String runner = "com.github.cheapmon.apc.droid.test/android.support.test.runner.AndroidJUnitRunner";
-    String ids = Stream.of(options.getIds()).collect(Collectors.joining(","));
+    Path filePath = options.getFile().toAbsolutePath();
+    String fileName = options.getFile().getFileName().toString();
     String mode = options.getExtractionMode().toString();
     String algorithm = options.getAlgorithm().toString();
     APCLogger.info(ADBConnector.class, "Loading tests onto device");
+    buildADB("push", filePath.toString(), ID_FILE);
     InputStream stream = buildADB("shell", "am", "instrument", "-w", "-r",
-        "-e", "ids", ids,
+        "-e", "file", ID_FILE,
         "-e", "mode", mode,
         "-e", "algorithm", algorithm,
         "-e", "debug", "false",
         "-e", "class", test, runner);
+    try {
+      if (fileName.equals("ids.txt")) {
+        Files.delete(filePath);
+      }
+    } catch (IOException ex) {
+      throw new APCException("Deleting id file failed", ex);
+    }
     APCLogger.debug(ADBConnector.class, new BufferedReader(new InputStreamReader(stream)).lines()
         .collect(Collectors.joining("\n")));
     APCLogger.info(ADBConnector.class, "Finished");
