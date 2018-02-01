@@ -85,6 +85,20 @@ public class GooglePlayWizard {
   }
 
   /**
+   * Check if an application can be installed.<br><br>
+   *
+   * Simply look for warning message about version.
+   *
+   * @param id Application id
+   * @return Whether the app can be installed or not
+   * @throws RemoteException Device communication fails
+   */
+  public static boolean canBeInstalled(String id) throws RemoteException {
+    g.start(id);
+    return !g.has("warningMessage");
+  }
+
+  /**
    * Check if an app is already installed on this device.<br><br>
    *
    * Credit: <a href="https://stackoverflow.com/a/28175210/6743101">Jonik</a>
