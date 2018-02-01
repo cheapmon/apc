@@ -34,6 +34,16 @@ public class GooglePlayHelper {
   private final int TIMEOUT = 1000;
 
   /**
+   * Default timeout for Google Play reload
+   */
+  private final int RELOAD_TIMEOUT = 25;
+
+  /**
+   * Number of times Google Play has been reloaded
+   */
+  private int reloadCount = 0;
+
+  /**
    * Create new helper.
    */
   public GooglePlayHelper() {
@@ -47,9 +57,21 @@ public class GooglePlayHelper {
    * @param id Application id
    * @throws DroidException Device communication fails
    */
-    if (!device.isScreenOn()) {
-      device.wakeUp();
   public void start(String id) throws DroidException {
+    try {
+      reloadCount++;
+      if (reloadCount >= RELOAD_TIMEOUT) {
+        device.pressRecentApps();
+        device.waitForWindowUpdate(null, TIMEOUT);
+        device.findObject(By.res("com.android.systemui:id/button")).click();
+        device.waitForWindowUpdate(null, TIMEOUT);
+        reloadCount = 0;
+      }
+      if (!device.isScreenOn()) {
+        device.wakeUp();
+      }
+    } catch (RemoteException ex) {
+      throw new DroidException("Device communication failed", ex);
     }
     InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
         Uri.parse(String.format("market://details?id=%s", id))));
