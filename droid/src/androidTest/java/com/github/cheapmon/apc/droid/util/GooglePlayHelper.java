@@ -45,11 +45,11 @@ public class GooglePlayHelper {
    * Open Google Play page for application.
    *
    * @param id Application id
-   * @throws RemoteException Device communication fails
+   * @throws DroidException Device communication fails
    */
-  public void start(String id) throws RemoteException {
     if (!device.isScreenOn()) {
       device.wakeUp();
+  public void start(String id) throws DroidException {
     }
     InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
         Uri.parse(String.format("market://details?id=%s", id))));

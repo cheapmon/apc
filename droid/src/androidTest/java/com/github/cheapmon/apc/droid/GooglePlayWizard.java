@@ -1,8 +1,8 @@
 package com.github.cheapmon.apc.droid;
 
 import android.content.pm.PackageManager;
-import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
+import com.github.cheapmon.apc.droid.util.DroidException;
 import com.github.cheapmon.apc.droid.util.GooglePlayHelper;
 
 /**
@@ -37,9 +37,9 @@ public class GooglePlayWizard {
    * </ul>
    *
    * @param id App id
-   * @throws RemoteException Device communication fails
+   * @throws DroidException Device communication fails
    */
-  public static InstallState install(String id) throws RemoteException {
+  public static InstallState install(String id) throws DroidException {
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
@@ -74,9 +74,9 @@ public class GooglePlayWizard {
    * Click uninstall button and confirm.
    *
    * @param id Application id
-   * @throws RemoteException Device communication fails
+   * @throws DroidException Device communication fails
    */
-  public static void remove(String id) throws RemoteException {
+  public static void remove(String id) throws DroidException {
     g.start(id);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
@@ -91,9 +91,9 @@ public class GooglePlayWizard {
    *
    * @param id Application id
    * @return Whether the app can be installed or not
-   * @throws RemoteException Device communication fails
+   * @throws DroidException Device communication fails
    */
-  public static boolean canBeInstalled(String id) throws RemoteException {
+  public static boolean canBeInstalled(String id) throws DroidException {
     g.start(id);
     return !g.has("warningMessage");
   }
