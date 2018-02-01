@@ -76,12 +76,13 @@ public class GooglePlayWizard {
    * @param id Application id
    * @throws DroidException Device communication fails
    */
-  public static void remove(String id) throws DroidException {
+  public static InstallState remove(String id) throws DroidException {
     g.start(id);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
     g.waitUntilGone("message");
     g.waitUntilHas("buttonContainer");
+    return InstallState.SUCCESS;
   }
 
   /**

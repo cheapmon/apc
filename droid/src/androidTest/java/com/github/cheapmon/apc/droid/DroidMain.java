@@ -4,10 +4,9 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
+import com.github.cheapmon.apc.droid.util.StressTest;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,9 +45,8 @@ public class DroidMain {
   @Test
   public void main() throws Exception {
     parseCommands();
-    SearchingAlgorithm algorithm = AlgorithmHelper.get(this.algorithm).newInstance();
-    DroidLogger.log(PlaystoreInstaller.install(ids[0]).toString());
-    PlaystoreInstaller.remove(ids[0]);
+    String testInfo = StressTest.run(ids);
+    DroidLogger.log(testInfo);
   }
 
   /**

@@ -36,7 +36,7 @@ public class GooglePlayHelper {
   /**
    * Default timeout for Google Play reload
    */
-  private final int RELOAD_TIMEOUT = 25;
+  private final int RELOAD_TIMEOUT = 10;
 
   /**
    * Number of times Google Play has been reloaded
