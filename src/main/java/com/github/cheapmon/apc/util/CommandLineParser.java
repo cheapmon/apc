@@ -115,18 +115,21 @@ public class CommandLineParser {
       if (ids == null) {
         printUsage("Please supply at least one application id.");
         return null;
-      } else {
-        ids = filterIDs(ids);
-        Path newFile = Paths.get(".", "ids.txt");
-        try {
-          Files.write(newFile, Stream.of(ids).collect(Collectors.joining("\n")).getBytes());
-        } catch (IOException ex) {
-          throw new APCException("Reading id file failed", ex);
-        }
-        return newFile;
       }
     } else {
-      return Paths.get(file);
+      try {
+        ids = Files.readAllLines(Paths.get(file)).toArray(new String[0]);
+      } catch (IOException ex) {
+        throw new APCException("Reading id file failed", ex);
+      }
+    }
+    try {
+      ids = filterIDs(ids);
+      Path newFile = Paths.get(".", "ids.txt");
+      Files.write(newFile, Stream.of(ids).collect(Collectors.joining("\n")).getBytes());
+      return newFile;
+    } catch (IOException ex) {
+      throw new APCException("Creating id file failed", ex);
     }
   }
 
