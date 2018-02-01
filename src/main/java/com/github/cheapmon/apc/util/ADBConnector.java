@@ -131,11 +131,12 @@ public class ADBConnector {
   }
 
   /**
-   * Remove APC files from device.
+   * Remove APC files from device. Make sure all tests have stopped.
    *
    * @throws APCException Removing fails
    */
   public void remove() throws APCException {
+    buildADB("shell", "am", "force-stop", "com.github.cheapmon.apc.droid");
     buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid");
     buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid.test");
     APCLogger.info(ADBConnector.class, "Removed all APC files from device");
@@ -158,6 +159,7 @@ public class ADBConnector {
     APCLogger.info(ADBConnector.class, "Loading tests onto device");
     buildADB("push", filePath.toString(), ID_FILE);
     InputStream stream = buildADB("shell", "am", "instrument", "-w", "-r",
+        "--no-window-animation",
         "-e", "file", ID_FILE,
         "-e", "mode", mode,
         "-e", "algorithm", algorithm,
