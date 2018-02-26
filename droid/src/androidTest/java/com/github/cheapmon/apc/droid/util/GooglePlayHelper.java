@@ -146,7 +146,7 @@ public class GooglePlayHelper {
       device.pressRecentApps();
       device.waitForWindowUpdate(null, TIMEOUT);
       device.findObject(By.res("com.android.systemui:id/button")).click();
-      device.waitForWindowUpdate(null, TIMEOUT);
+      waitUntilHas("market", TIMEOUT * 5);
       reloadCount = 0;
     }
   }
