@@ -45,8 +45,7 @@ public class DroidMain {
   @Test
   public void main() throws Exception {
     parseCommands();
-    String testInfo = StressTest.run(ids);
-    DroidLogger.log(testInfo);
+    StressTest.run(ids);
   }
 
   /**
