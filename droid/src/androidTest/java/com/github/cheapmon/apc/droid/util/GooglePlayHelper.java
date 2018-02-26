@@ -65,7 +65,7 @@ public class GooglePlayHelper {
     }
     InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
         Uri.parse(String.format("market://details?id=%s", id))));
-    waitForChange();
+    waitUntilHas("market", TIMEOUT * 5);
   }
 
   /**
@@ -102,6 +102,16 @@ public class GooglePlayHelper {
    */
   public void waitUntilHas(String container) {
     device.wait(Until.hasObject(this.containers.get(container)), TIMEOUT);
+  }
+
+  /**
+   * Wait certain time until certain container has appeared.
+   *
+   * @param container Container
+   * @param timeout Time to wait
+   */
+  public void waitUntilHas(String container, int timeout) {
+    device.wait(Until.hasObject(this.containers.get(container)), timeout);
   }
 
   /**
@@ -146,6 +156,7 @@ public class GooglePlayHelper {
    */
   private void initContainers() {
     containers = new HashMap<>();
+    containers.put("market", By.pkg("com.android.vending"));
     containers.put("warningMessage", By.res("com.android.vending:id/warning_message_module"));
     containers.put("wifiMessage", By.res("com.android.vending:id/wifi_message"));
     containers.put("installMessage", By.res("com.android.vending:id/summary_dynamic_status")
