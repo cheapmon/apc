@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
-import com.github.cheapmon.apc.droid.util.StressTest;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
@@ -45,7 +44,6 @@ public class DroidMain {
   @Test
   public void main() throws Exception {
     parseCommands();
-    StressTest.run(ids);
   }
 
   /**
