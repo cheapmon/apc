@@ -96,7 +96,7 @@ public class View {
    * @param obj View to check for equivalency
    * @return View is equivalent
    */
-  boolean isEquivalent(Object obj) {
+  public boolean isEquivalent(Object obj) {
     if (!(obj instanceof View)) {
       return false;
     }
