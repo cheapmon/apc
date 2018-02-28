@@ -58,6 +58,37 @@ public class View {
   }
 
   /**
+   * Dump text of this View and its children.
+   *
+   * @return Resulting text
+   */
+  public String dumpText() {
+    return dump().toString();
+  }
+
+  /**
+   * Helper method for text dump.
+   *
+   * @return StringBuilder containing text
+   */
+  private StringBuilder dump() {
+    StringBuilder builder = new StringBuilder();
+    for (String string : text) {
+      if (!string.equals("")) {
+        builder.append(string);
+      }
+    }
+    if (this.children.size() <= 0 && builder.length() > 0) {
+      builder.append("\n");
+    } else {
+      for (View childView : this.children) {
+        builder.append(childView.dump());
+      }
+    }
+    return builder;
+  }
+
+  /**
    * Determine whether this View is the same as another.<br><br>
    *
    * Two Views are equal when their properties and children are equal.
