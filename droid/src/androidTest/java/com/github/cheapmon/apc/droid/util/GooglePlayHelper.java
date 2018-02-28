@@ -2,7 +2,6 @@ package com.github.cheapmon.apc.droid.util;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.RemoteException;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
@@ -58,14 +57,12 @@ public class GooglePlayHelper {
    * @throws DroidException Device communication fails
    */
   public void start(String id) throws DroidException {
-    try {
-      reload();
-    } catch (RemoteException ex) {
-      throw new DroidException("Device communication failed", ex);
-    }
-    InstrumentationRegistry.getContext().startActivity(new Intent(Intent.ACTION_VIEW,
-        Uri.parse(String.format("market://details?id=%s", id))));
+    Uri uri = Uri.parse(String.format("market://details?id=%s", id));
+    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    InstrumentationRegistry.getContext().startActivity(intent);
     waitUntilHas("market", TIMEOUT * 5);
+    waitForChange();
   }
 
   /**
@@ -133,22 +130,6 @@ public class GooglePlayHelper {
    */
   public boolean has(String container) {
     return device.hasObject(this.containers.get(container));
-  }
-
-  /**
-   * Reload device after certain number of starts.
-   *
-   * @throws RemoteException Device communication fails
-   */
-  private void reload() throws RemoteException {
-    reloadCount++;
-    if (reloadCount >= RELOAD_TIMEOUT) {
-      device.pressRecentApps();
-      device.waitForWindowUpdate(null, TIMEOUT);
-      device.findObject(By.res("com.android.systemui:id/button")).click();
-      waitUntilHas("market", TIMEOUT * 5);
-      reloadCount = 0;
-    }
   }
 
   /**
