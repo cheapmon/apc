@@ -2,8 +2,10 @@ package com.github.cheapmon.apc.droid;
 
 import android.content.pm.PackageManager;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.UiDevice;
 import com.github.cheapmon.apc.droid.util.DroidException;
 import com.github.cheapmon.apc.droid.util.GooglePlayHelper;
+import java.io.IOException;
 
 /**
  * Install or remove Android application from Google Play.
@@ -82,6 +84,22 @@ public class GooglePlayWizard {
     g.click("buttonPanel", "firstButton");
     g.waitUntilGone("message");
     g.waitUntilHas("buttonContainer");
+    return InstallState.SUCCESS;
+  }
+
+  /**
+   * Remove application via shell command.
+   *
+   * @param id Application id
+   * @return Removal succeeded or not
+   */
+  public static InstallState removeSilently(String id) throws DroidException {
+    UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    try {
+      device.executeShellCommand(String.format("pm uninstall %s", id));
+    } catch (IOException ex) {
+      throw new DroidException("Shell command failed", ex);
+    }
     return InstallState.SUCCESS;
   }
 

@@ -44,7 +44,7 @@ public class StressTest {
           attempts = 0;
           continue;
         }
-        InstallState remove = GooglePlayWizard.remove(id);
+        InstallState remove = GooglePlayWizard.removeSilently(id);
         if (attempts > longestAttempt) {
           longestAttempt = attempts;
         }
