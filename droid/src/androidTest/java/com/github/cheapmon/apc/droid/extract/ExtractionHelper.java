@@ -2,7 +2,6 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.support.test.uiautomator.UiDevice;
 import com.github.cheapmon.apc.droid.util.DroidException;
-import com.github.cheapmon.apc.droid.util.DroidLogger;
 import java.io.IOException;
 
 /**

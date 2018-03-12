@@ -34,12 +34,50 @@ public class Page {
   }
 
   /**
+   * Merge another page into this page.
+   *
+   * @param otherPage Page to merge from
+   */
+  public void merge(Page otherPage) {
+    rootView.merge(otherPage.rootView);
+  }
+
+  /**
    * Dump full text found on layout.
    *
    * @return Plain text of layout
    */
   public String dumpText() {
     return rootView.dumpText();
+  }
+
+  /**
+   * Check this page for equality with another page.
+   *
+   * @param obj Page to check equality with
+   * @return Whether the page is equal
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Page)) {
+      return false;
+    }
+    View otherRootView = ((Page) obj).rootView;
+    return otherRootView.equals(this.rootView);
+  }
+
+  /**
+   * Check this page for equivalency with another page.
+   *
+   * @param obj Page to check
+   * @return Whether the pages are equivalent
+   */
+  public boolean isEquivalent(Object obj) {
+    if (!(obj instanceof Page)) {
+      return false;
+    }
+    View otherRootView = ((Page) obj).rootView;
+    return otherRootView.isEquivalent(this.rootView);
   }
 
 }

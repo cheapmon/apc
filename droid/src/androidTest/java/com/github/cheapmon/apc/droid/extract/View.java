@@ -58,12 +58,35 @@ public class View {
   }
 
   /**
+   * Merge another view into this view.
+   *
+   * @param otherView View to merge from
+   */
+  public void merge(View otherView) {
+    this.text.addAll(otherView.text);
+    if (this.scrollable) {
+      View container = this.children.get(0);
+      View otherContainer = otherView.children.get(0);
+      container.text.addAll(otherContainer.text);
+      for (View child : otherContainer.children) {
+        if (!container.children.contains(child)) {
+          container.children.add(child);
+        }
+      }
+    } else {
+      for (int i = 0; i < this.children.size(); i++) {
+        this.children.get(i).merge(otherView.children.get(i));
+      }
+    }
+  }
+
+  /**
    * Dump text of this View and its children.
    *
    * @return Resulting text
    */
   public String dumpText() {
-    return dump().toString();
+    return dump().toString().trim();
   }
 
   /**
@@ -75,7 +98,7 @@ public class View {
     StringBuilder builder = new StringBuilder();
     for (String string : text) {
       if (!string.equals("")) {
-        builder.append(string);
+        builder.append(string).append(" ");
       }
     }
     if (this.children.size() <= 0 && builder.length() > 0) {
