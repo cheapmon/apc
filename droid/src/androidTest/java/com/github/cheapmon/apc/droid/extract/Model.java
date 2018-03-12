@@ -31,7 +31,7 @@ public class Model {
   }
 
   /**
-   * App single page to model.
+   * Add single page to model.
    *
    * @param page Page to add
    * @param activityName Activity the page belongs to
