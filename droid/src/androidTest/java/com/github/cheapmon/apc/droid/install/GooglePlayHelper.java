@@ -1,4 +1,4 @@
-package com.github.cheapmon.apc.droid.util;
+package com.github.cheapmon.apc.droid.install;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
+import com.github.cheapmon.apc.droid.util.DroidException;
 import java.util.HashMap;
 
 /**

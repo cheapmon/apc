@@ -1,10 +1,9 @@
-package com.github.cheapmon.apc.droid;
+package com.github.cheapmon.apc.droid.install;
 
 import android.content.pm.PackageManager;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.UiDevice;
 import com.github.cheapmon.apc.droid.util.DroidException;
-import com.github.cheapmon.apc.droid.util.GooglePlayHelper;
 import java.io.IOException;
 
 /**

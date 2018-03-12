@@ -2,8 +2,8 @@ package com.github.cheapmon.apc.droid.util;
 
 import android.util.Log;
 import com.github.cheapmon.apc.droid.DroidMain;
-import com.github.cheapmon.apc.droid.GooglePlayWizard;
-import com.github.cheapmon.apc.droid.GooglePlayWizard.InstallState;
+import com.github.cheapmon.apc.droid.install.GooglePlayWizard;
+import com.github.cheapmon.apc.droid.install.GooglePlayWizard.InstallState;
 
 /**
  * Simple test to check endurance of Google Play installation and removal.<br><br>
