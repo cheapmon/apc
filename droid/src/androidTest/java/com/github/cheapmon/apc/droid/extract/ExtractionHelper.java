@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
+import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
 import com.github.cheapmon.apc.droid.util.DroidException;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Provide utility for model extraction.
@@ -84,6 +86,40 @@ public class ExtractionHelper {
       throw new DroidException("Shell command failed", ex);
     }
     throw new DroidException("Could not find current activity");
+  }
+
+  /**
+   * Get root view of an applications layout.
+   *
+   * @return Root view
+   */
+  public UiObject2 getRoot() {
+    return this.device.findObject(By.pkg(this.applicationID).depth(0));
+  }
+
+  /**
+   * Get page representation of current layout.
+   *
+   * @return Resulting page
+   */
+  public Page getPage() {
+    return new Page(getRoot());
+  }
+
+  /**
+   * Get all clickable views of current layout.
+   *
+   * @return List of views
+   */
+  public List<UiObject2> getAllClickable() {
+    return getRoot().findObjects(By.clickable(true));
+  }
+
+  /**
+   * Wait until current layout has changed.
+   */
+  public void waitForUpdate() {
+    this.device.waitForWindowUpdate(this.applicationID, TIMEOUT);
   }
 
 }

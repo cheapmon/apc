@@ -3,6 +3,10 @@ package com.github.cheapmon.apc.droid;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import com.github.cheapmon.apc.droid.extract.Model;
+import com.github.cheapmon.apc.droid.extract.ModelExtractor;
+import com.github.cheapmon.apc.droid.install.GooglePlayWizard;
+import com.github.cheapmon.apc.droid.install.GooglePlayWizard.InstallState;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -44,6 +48,17 @@ public class DroidMain {
   @Test
   public void main() throws Exception {
     parseCommands();
+    if (this.mode.equals("MODEL")) {
+      for (String id : this.ids) {
+        if (GooglePlayWizard.install(id) != InstallState.FAILURE) {
+          Model model = new ModelExtractor(id).getModel();
+        }
+        //GooglePlayWizard.removeSilently(id);
+      }
+    } else {
+      DroidLogger.log("POLICY extraction is not supported yet.");
+    }
+
   }
 
   /**

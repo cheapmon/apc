@@ -1,5 +1,8 @@
 package com.github.cheapmon.apc.droid.extract;
 
+import android.support.test.uiautomator.StaleObjectException;
+import com.github.cheapmon.apc.droid.util.DroidException;
+
 /**
  * Extract a model of an app.<br><br>
  *
@@ -14,12 +17,44 @@ package com.github.cheapmon.apc.droid.extract;
 public class ModelExtractor {
 
   /**
-   * Get model of an app.
-   *
-   * @param id App identification
-   * @return Model of app
+   * Application to extract from
    */
-  public static Model get(String id) {
+  private final String id;
+
+  /**
+   * Helper for extraction
+   */
+  private final ExtractionHelper e;
+
+  /**
+   * Extract model for single application.
+   *
+   * @param id Application id
+   */
+  public ModelExtractor(String id) {
+    this.id = id;
+    this.e = new ExtractionHelper(id);
+  }
+
+  /**
+   * Extract model.
+   *
+   * @return Extracted Model
+   */
+  public Model getModel() throws DroidException {
+    e.start();
+    Model model = new Model(e.getPage(), e.getActivityName());
+    int count = e.getAllClickable().size();
+    for (int i = 0; i < count; i++) {
+      try {
+        e.getAllClickable().get(i).click();
+        e.waitForUpdate();
+        model.add(e.getPage(), e.getActivityName());
+      } catch (StaleObjectException ex) {
+        i--;
+      }
+      e.start();
+    }
     return null;
   }
 
