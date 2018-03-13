@@ -44,10 +44,10 @@ public class ModelExtractor {
   public Model getModel() throws DroidException {
     e.start();
     Model model = new Model(e.getPage(), e.getActivityName());
-    int count = e.getAllClickable().size();
+    int count = e.getStaticClickable().size();
     for (int i = 0; i < count; i++) {
       try {
-        e.getAllClickable().get(i).click();
+        e.getStaticClickable().get(i).click();
         e.waitForUpdate();
         model.add(e.getPage(), e.getActivityName());
       } catch (StaleObjectException ex) {

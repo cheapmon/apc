@@ -41,7 +41,7 @@ public class ExtractionHelper {
   /**
    * Timeout for application loading
    */
-  private final int TIMEOUT = 5000;
+  private final int TIMEOUT = 1000;
 
   /**
    * Get new helper for certain application
@@ -111,8 +111,14 @@ public class ExtractionHelper {
    *
    * @return List of views
    */
-  public List<UiObject2> getAllClickable() {
-    return getRoot().findObjects(By.clickable(true));
+  public List<UiObject2> getStaticClickable() {
+    List<UiObject2> clickViews = getRoot().findObjects(By.clickable(true));
+    for (UiObject2 scrollView : getRoot().findObjects(By.scrollable(true))) {
+      for (UiObject2 clickView : scrollView.findObjects(By.clickable(true))) {
+        clickViews.removeIf(object -> object.equals(clickView));
+      }
+    }
+    return clickViews;
   }
 
   /**
