@@ -20,14 +20,10 @@ public class Model {
   private List<ModelNode> nodes;
 
   /**
-   * Instantiate new model from root activity.
-   *
-   * @param activityName Name of root activity
+   * Instantiate new model from scratch.
    */
-  public Model(Page page, String activityName) {
-    ModelNode rootNode = new ModelNode(page, activityName);
+  public Model() {
     nodes = new ArrayList<>();
-    nodes.add(rootNode);
   }
 
   /**
@@ -36,13 +32,14 @@ public class Model {
    * @param page Page to add
    * @param activityName Activity the page belongs to
    */
-  public void add(Page page, String activityName) {
+  public boolean add(Page page, String activityName) {
     for (ModelNode node : nodes) {
       if (node.add(page, activityName)) {
-        return;
+        return false;
       }
     }
     nodes.add(new ModelNode(page, activityName));
+    return true;
   }
 
 }

@@ -2,6 +2,7 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.graphics.Rect;
 import android.support.test.uiautomator.UiObject2;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,6 +32,7 @@ public class Page {
    */
   public Page(UiObject2 obj) {
     rootView = new View(obj);
+    path = new ArrayList<>();
   }
 
   /**
@@ -40,6 +42,24 @@ public class Page {
    */
   public void merge(Page otherPage) {
     rootView.merge(otherPage.rootView);
+  }
+
+  /**
+   * Add coordinates to path.
+   */
+  public void addToPath(Page page, Rect rect) {
+    this.path = new ArrayList<>();
+    this.path.addAll(page.getPath());
+    this.path.add(rect);
+  }
+
+  /**
+   * Get path to this page.
+   *
+   * @return Path
+   */
+  public List<Rect> getPath() {
+    return this.path;
   }
 
   /**

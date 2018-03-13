@@ -2,8 +2,10 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
+import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
@@ -66,6 +68,19 @@ public class ExtractionHelper {
   }
 
   /**
+   * Start activity and click list of views.
+   *
+   * @param path Path to view
+   */
+  public void start(List<Rect> path) {
+    this.start();
+    for (Rect rect : path) {
+      this.device.click(rect.centerX(), rect.centerY());
+      waitForUpdate();
+    }
+  }
+
+  /**
    * Get current activity.
    *
    * @return Activity name
@@ -94,6 +109,12 @@ public class ExtractionHelper {
    * @return Root view
    */
   public UiObject2 getRoot() {
+    BySelector drawerLayout = By.clazz("android.support.v4.widget.DrawerLayout");
+    if (this.device.hasObject(drawerLayout)) {
+      if (this.device.findObject(drawerLayout).getChildren().size() > 1) {
+        return this.device.findObject(drawerLayout).getChildren().get(1);
+      }
+    }
     return this.device.findObject(By.pkg(this.applicationID).depth(0));
   }
 

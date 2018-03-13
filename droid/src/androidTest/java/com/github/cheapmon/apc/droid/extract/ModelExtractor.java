@@ -1,7 +1,12 @@
 package com.github.cheapmon.apc.droid.extract;
 
-import android.support.test.uiautomator.StaleObjectException;
+import android.graphics.Rect;
+import android.support.test.uiautomator.UiObject2;
+import android.text.TextUtils;
 import com.github.cheapmon.apc.droid.util.DroidException;
+import com.github.cheapmon.apc.droid.util.DroidLogger;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * Extract a model of an app.<br><br>
@@ -43,19 +48,37 @@ public class ModelExtractor {
    */
   public Model getModel() throws DroidException {
     e.start();
-    Model model = new Model(e.getPage(), e.getActivityName());
-    int count = e.getStaticClickable().size();
-    for (int i = 0; i < count; i++) {
-      try {
-        e.getStaticClickable().get(i).click();
-        e.waitForUpdate();
-        model.add(e.getPage(), e.getActivityName());
-      } catch (StaleObjectException ex) {
-        i--;
+    Queue<Page> pages = new LinkedList<>();
+    Model model = new Model();
+    Page page = e.getPage();
+    pages.add(page);
+    outer:
+    while (pages.size() > 0) {
+      page = pages.remove();
+      e.start(page.getPath());
+      DroidLogger.log(TextUtils.join(", ", page.getPath()));
+      DroidLogger.log(page.dumpText());
+      int count = e.getStaticClickable().size();
+      for (int i = 0; i < count; i++) {
+        e.start(page.getPath());
+        try {
+          UiObject2 clickView = e.getStaticClickable().get(i);
+          Rect rect = clickView.getVisibleBounds();
+          clickView.click();
+          e.waitForUpdate();
+          Page newPage = e.getPage();
+          boolean isNew = model.add(newPage, e.getActivityName());
+          if (isNew && !e.getActivityName().startsWith(id)) {
+            newPage.addToPath(page, rect);
+            pages.add(newPage);
+          }
+        } catch (IndexOutOfBoundsException ex) {
+          DroidLogger.log(ex.getMessage());
+          continue outer;
+        }
       }
-      e.start();
     }
-    return null;
+    return model;
   }
 
 }
