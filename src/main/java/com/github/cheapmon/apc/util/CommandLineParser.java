@@ -109,6 +109,7 @@ public class CommandLineParser {
    * @param ids Given IDs
    * @param file Given file containing ids
    * @return IDs of apps to crawl
+   * @throws APCException ID file corrupted
    */
   private static Path getFile(String[] ids, String file) throws APCException {
     if (file == null) {

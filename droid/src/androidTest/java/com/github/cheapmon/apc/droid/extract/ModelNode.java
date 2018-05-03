@@ -2,6 +2,8 @@ package com.github.cheapmon.apc.droid.extract;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Collect all pages in a certain activity.
@@ -39,7 +41,7 @@ class ModelNode {
    */
   public boolean add(Page page, String activityName) {
     if (this.activityName.equals(activityName)) {
-      for (Page p : pages) {
+      for (Page p : this.pages) {
         if (page.equals(p)) {
           return true;
         }
@@ -52,6 +54,21 @@ class ModelNode {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Convert to DOM element.
+   *
+   * @param document Document element is saved in
+   * @return Resulting element
+   */
+  public Element toElement(Document document) {
+    Element activity = document.createElement("node");
+    activity.setAttribute("activity", this.activityName);
+    for (Page page : this.pages) {
+      activity.appendChild(page.toElement(document));
+    }
+    return activity;
   }
 
 }

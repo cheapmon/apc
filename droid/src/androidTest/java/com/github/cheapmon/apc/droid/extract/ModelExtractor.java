@@ -2,9 +2,7 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.graphics.Rect;
 import android.support.test.uiautomator.UiObject2;
-import android.text.TextUtils;
-import com.github.cheapmon.apc.droid.util.DroidException;
-import com.github.cheapmon.apc.droid.util.DroidLogger;
+import android.util.Log;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -46,34 +44,32 @@ public class ModelExtractor {
    *
    * @return Extracted Model
    */
-  public Model getModel() throws DroidException {
-    e.start();
+  public Model getModel() {
+    this.e.start();
     Queue<Page> pages = new LinkedList<>();
-    Model model = new Model();
-    Page page = e.getPage();
+    Model model = new Model(this.id);
+    Page page = this.e.getPage();
     pages.add(page);
     outer:
     while (pages.size() > 0) {
       page = pages.remove();
-      e.start(page.getPath());
-      DroidLogger.log(TextUtils.join(", ", page.getPath()));
-      DroidLogger.log(page.dumpText());
-      int count = e.getStaticClickable().size();
+      this.e.start(page.getPath());
+      int count = this.e.getStaticClickable().size();
       for (int i = 0; i < count; i++) {
-        e.start(page.getPath());
+        this.e.start(page.getPath());
         try {
-          UiObject2 clickView = e.getStaticClickable().get(i);
+          UiObject2 clickView = this.e.getStaticClickable().get(i);
           Rect rect = clickView.getVisibleBounds();
           clickView.click();
-          e.waitForUpdate();
-          Page newPage = e.getPage();
-          boolean isNew = model.add(newPage, e.getActivityName());
-          if (isNew && !e.getActivityName().startsWith(id)) {
+          this.e.waitForUpdate();
+          Page newPage = this.e.getPage();
+          boolean isNew = model.add(newPage, this.e.getActivityName());
+          if (isNew) {
             newPage.addToPath(page, rect);
             pages.add(newPage);
           }
-        } catch (IndexOutOfBoundsException ex) {
-          DroidLogger.log(ex.getMessage());
+        } catch (Exception ex) {
+          Log.e("DroidMain", "Something went wrong.", ex);
           continue outer;
         }
       }

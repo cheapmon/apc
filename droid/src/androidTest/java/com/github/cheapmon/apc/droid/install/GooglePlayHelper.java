@@ -34,20 +34,10 @@ public class GooglePlayHelper {
   private final int TIMEOUT = 1000;
 
   /**
-   * Default timeout for Google Play reload
-   */
-  private final int RELOAD_TIMEOUT = 10;
-
-  /**
-   * Number of times Google Play has been reloaded
-   */
-  private int reloadCount = 0;
-
-  /**
    * Create new helper.
    */
   public GooglePlayHelper() {
-    device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    this.device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     initContainers();
   }
 
@@ -62,7 +52,7 @@ public class GooglePlayHelper {
     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
     InstrumentationRegistry.getContext().startActivity(intent);
-    waitUntilHas("market", TIMEOUT * 5);
+    waitUntilHas("market", this.TIMEOUT * 5);
     waitForChange();
   }
 
@@ -76,7 +66,7 @@ public class GooglePlayHelper {
     UiObject2 objectToClick = null;
     for (String container : containers) {
       if (objectToClick == null) {
-        objectToClick = device.findObject(this.containers.get(container));
+        objectToClick = this.device.findObject(this.containers.get(container));
       } else {
         objectToClick = objectToClick.findObject(this.containers.get(container));
       }
@@ -90,7 +80,7 @@ public class GooglePlayHelper {
    * Wait until the screen has changed.
    */
   public void waitForChange() {
-    device.waitForWindowUpdate("com.android.vending", TIMEOUT);
+    this.device.waitForWindowUpdate("com.android.vending", this.TIMEOUT);
   }
 
   /**
@@ -99,7 +89,7 @@ public class GooglePlayHelper {
    * @param container Container
    */
   public void waitUntilHas(String container) {
-    device.wait(Until.hasObject(this.containers.get(container)), TIMEOUT);
+    this.device.wait(Until.hasObject(this.containers.get(container)), this.TIMEOUT);
   }
 
   /**
@@ -109,7 +99,7 @@ public class GooglePlayHelper {
    * @param timeout Time to wait
    */
   public void waitUntilHas(String container, int timeout) {
-    device.wait(Until.hasObject(this.containers.get(container)), timeout);
+    this.device.wait(Until.hasObject(this.containers.get(container)), timeout);
   }
 
   /**
@@ -118,8 +108,8 @@ public class GooglePlayHelper {
    * @param container Container
    */
   public void waitUntilGone(String container) {
-    while (device.hasObject(this.containers.get(container))) {
-      device.wait(Until.gone(this.containers.get(container)), TIMEOUT);
+    while (this.device.hasObject(this.containers.get(container))) {
+      this.device.wait(Until.gone(this.containers.get(container)), this.TIMEOUT);
     }
   }
 
@@ -130,29 +120,29 @@ public class GooglePlayHelper {
    * @return Whether or not the container exists
    */
   public boolean has(String container) {
-    return device.hasObject(this.containers.get(container));
+    return this.device.hasObject(this.containers.get(container));
   }
 
   /**
    * Init common containers used by the Google Play app.
    */
   private void initContainers() {
-    containers = new HashMap<>();
-    containers.put("market", By.pkg("com.android.vending"));
-    containers.put("warningMessage", By.res("com.android.vending:id/warning_message_module"));
-    containers.put("wifiMessage", By.res("com.android.vending:id/wifi_message"));
-    containers.put("installMessage", By.res("com.android.vending:id/summary_dynamic_status")
+    this.containers = new HashMap<>();
+    this.containers.put("market", By.pkg("com.android.vending"));
+    this.containers.put("warningMessage", By.res("com.android.vending:id/warning_message_module"));
+    this.containers.put("wifiMessage", By.res("com.android.vending:id/wifi_message"));
+    this.containers.put("installMessage", By.res("com.android.vending:id/summary_dynamic_status")
         .clazz("android.widget.TextView"));
-    containers.put("message", By.res("android:id/message"));
-    containers.put("buttonContainer", By.res("com.android.vending:id/button_container"));
-    containers.put("buttonPanel", By.res("com.android.vending:id/buttonPanel"));
-    containers.put("downloadPanel", By.res("com.android.vending:id/download_progress_panel"));
-    containers.put("appPermissions", By.res("com.android.vending:id/app_permissions"));
-    containers.put("continueBar", By.res("com.android.vending:id/continue_button_bar"));
-    containers.put("continueButton", By.res("com.android.vending:id/continue_button"));
-    containers.put("skipButton", By.res("com.android.vending:id/not_now_button"));
-    containers.put("button", By.clazz("android.widget.Button"));
-    containers.put("firstButton", By.res("android:id/button1"));
+    this.containers.put("message", By.res("android:id/message"));
+    this.containers.put("buttonContainer", By.res("com.android.vending:id/button_container"));
+    this.containers.put("buttonPanel", By.res("com.android.vending:id/buttonPanel"));
+    this.containers.put("downloadPanel", By.res("com.android.vending:id/download_progress_panel"));
+    this.containers.put("appPermissions", By.res("com.android.vending:id/app_permissions"));
+    this.containers.put("continueBar", By.res("com.android.vending:id/continue_button_bar"));
+    this.containers.put("continueButton", By.res("com.android.vending:id/continue_button"));
+    this.containers.put("skipButton", By.res("com.android.vending:id/not_now_button"));
+    this.containers.put("button", By.clazz("android.widget.Button"));
+    this.containers.put("firstButton", By.res("android:id/button1"));
   }
 
 }

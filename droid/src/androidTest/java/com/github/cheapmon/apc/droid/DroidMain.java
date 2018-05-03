@@ -7,9 +7,13 @@ import com.github.cheapmon.apc.droid.extract.Model;
 import com.github.cheapmon.apc.droid.extract.ModelExtractor;
 import com.github.cheapmon.apc.droid.install.GooglePlayWizard;
 import com.github.cheapmon.apc.droid.install.GooglePlayWizard.InstallState;
+import com.github.cheapmon.apc.droid.util.DroidException;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,27 +50,32 @@ public class DroidMain {
    * Entry point for Droid pipeline. Check for arguments. Configure extraction.
    */
   @Test
-  public void main() throws Exception {
+  public void main() throws DroidException {
     parseCommands();
     if (this.mode.equals("MODEL")) {
       for (String id : this.ids) {
         if (GooglePlayWizard.install(id) != InstallState.FAILURE) {
           Model model = new ModelExtractor(id).getModel();
+          send(model.toXML(), id);
         }
         //GooglePlayWizard.removeSilently(id);
       }
+      send(null, null);
     } else {
       DroidLogger.log("POLICY extraction is not supported yet.");
     }
-
   }
 
   /**
    * Parse arguments given to Droid.
    */
-  private void parseCommands() throws FileNotFoundException {
+  private void parseCommands() throws DroidException {
     Bundle extras = InstrumentationRegistry.getArguments();
-    this.ids = readIDFile(extras.getString("file"));
+    try {
+      this.ids = readIDFile(extras.getString("file"));
+    } catch (FileNotFoundException ex) {
+      throw new DroidException("Reading id file failed", ex);
+    }
     this.mode = extras.getString("mode");
     this.algorithm = extras.getString("algorithm");
     DroidLogger.log("Droid");
@@ -95,6 +104,32 @@ public class DroidMain {
     }
     scanner.close();
     return builder.toString().split("\n");
+  }
+
+  /**
+   * Send extracted model to to host computer.
+   *
+   * @param model Extracted model of app
+   * @param id Identification of app
+   * @throws DroidException Sending fails
+   */
+  private void send(String model, String id) throws DroidException {
+    try {
+      Socket s = new Socket("10.0.2.2", 2000);
+      PrintWriter out = new PrintWriter(s.getOutputStream());
+      if (model == null && id == null) {
+        out.print("OK");
+      } else {
+        out.print(String.format("%s\n", id));
+        out.print(model);
+        out.print("---\n");
+      }
+      out.flush();
+      out.close();
+      s.close();
+    } catch (IOException ex) {
+      throw new DroidException("Sending model failed", ex);
+    }
   }
 
 }

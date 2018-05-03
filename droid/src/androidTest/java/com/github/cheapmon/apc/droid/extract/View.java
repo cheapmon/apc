@@ -5,6 +5,9 @@ import android.support.test.uiautomator.UiObject2;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Represent a single view on the page.
@@ -96,7 +99,7 @@ public class View {
    */
   private StringBuilder dump() {
     StringBuilder builder = new StringBuilder();
-    for (String string : text) {
+    for (String string : this.text) {
       if (!string.equals("")) {
         builder.append(string).append(" ");
       }
@@ -109,6 +112,25 @@ public class View {
       }
     }
     return builder;
+  }
+
+  /**
+   * Convert to DOM element.
+   *
+   * @param document Document element is saved in
+   * @return Resulting element
+   */
+  public Element toElement(Document document) {
+    Element view = document.createElement("view");
+    view.setAttribute("class", this.className);
+    view.setAttribute("package", this.packageName);
+    view.setAttribute("clickable", String.valueOf(this.clickable));
+    view.setAttribute("scrollable", String.valueOf(this.scrollable));
+    view.setAttribute("text", this.text.stream().collect(Collectors.joining(", ")));
+    for (View childView : this.children) {
+      view.appendChild(childView.toElement(document));
+    }
+    return view;
   }
 
   /**

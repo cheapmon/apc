@@ -47,3 +47,11 @@ dependencies {
             name: 'junit',
             version: '4.12'
 }
+buildscript {
+    repositories {
+        maven {
+            url 'https://maven.google.com/'
+            name 'Google'
+        }
+    }
+}

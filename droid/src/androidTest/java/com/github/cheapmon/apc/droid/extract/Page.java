@@ -4,6 +4,8 @@ import android.graphics.Rect;
 import android.support.test.uiautomator.UiObject2;
 import java.util.ArrayList;
 import java.util.List;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Represent a piece of layout data.<br><br>
@@ -69,6 +71,18 @@ public class Page {
    */
   public String dumpText() {
     return rootView.dumpText();
+  }
+
+  /**
+   * Convert to DOM element.
+   *
+   * @param document Document element is saved in
+   * @return Resulting element
+   */
+  public Element toElement(Document document) {
+    Element page = document.createElement("page");
+    page.appendChild(this.rootView.toElement(document));
+    return page;
   }
 
   /**
