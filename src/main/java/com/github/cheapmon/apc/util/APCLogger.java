@@ -22,10 +22,28 @@ public class APCLogger {
   private static List<Logger> loggerList = new ArrayList<Logger>();
 
   /**
+   * Print APC logo to log.
+   */
+  public static void logo() {
+    info(APCMain.class,
+        "      ___           ___         ___     \n"
+            + "     /  /\\         /  /\\       /  /\\    \n"
+            + "    /  /::\\       /  /::\\     /  /:/    \n"
+            + "   /  /:/\\:\\     /  /:/\\:\\   /  /:/     \n"
+            + "  /  /:/~/::\\   /  /:/~/:/  /  /:/  ___ \n"
+            + " /__/:/ /:/\\:\\ /__/:/ /:/  /__/:/  /  /\\\n"
+            + " \\  \\:\\/:/__\\/ \\  \\:\\/:/   \\  \\:\\ /  /:/\n"
+            + "  \\  \\::/       \\  \\::/     \\  \\:\\  /:/ \n"
+            + "   \\  \\:\\        \\  \\:\\      \\  \\:\\/:/  \n"
+            + "    \\  \\:\\        \\  \\:\\      \\  \\::/   \n"
+            + "     \\__\\/         \\__\\/       \\__\\/    \n");
+  }
+
+  /**
    * Print break line to log.
    */
   public static void space() {
-    info(APCMain.class, "----------------------------------------");
+    info(APCMain.class, "--------------------------------------------------");
   }
 
   /**

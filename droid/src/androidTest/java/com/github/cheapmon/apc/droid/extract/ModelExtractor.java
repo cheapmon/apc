@@ -1,9 +1,11 @@
 package com.github.cheapmon.apc.droid.extract;
 
-import android.graphics.Rect;
+import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiObject2;
-import android.util.Log;
+import com.github.cheapmon.apc.droid.extract.ExtractionHelper.DroidSelector;
+import com.github.cheapmon.apc.droid.util.DroidException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -50,31 +52,37 @@ public class ModelExtractor {
     Model model = new Model(this.id);
     Page page = this.e.getPage();
     pages.add(page);
-    outer:
     while (pages.size() > 0) {
       page = pages.remove();
-      this.e.start(page.getPath());
-      int count = this.e.getStaticClickable().size();
-      for (int i = 0; i < count; i++) {
+      try {
         this.e.start(page.getPath());
+      } catch (IndexOutOfBoundsException | NullPointerException | StaleObjectException ex) {
+        continue;
+      }
+      List<List<DroidSelector>> list = this.e.getClickable();
+      for (List<DroidSelector> d : list) {
         try {
-          UiObject2 clickView = this.e.getStaticClickable().get(i);
-          Rect rect = clickView.getVisibleBounds();
+          this.e.start(page.getPath());
+          UiObject2 clickView = this.e.find(d);
           clickView.click();
           this.e.waitForUpdate();
           Page newPage = this.e.getPage();
-          boolean isNew = model.add(newPage, this.e.getActivityName());
+          boolean isNew;
+          try {
+            isNew = model.add(newPage, this.e.getActivityName());
+          } catch (DroidException ex) {
+            continue;
+          }
           if (isNew) {
-            newPage.addToPath(page, rect);
+            newPage.addToPath(page, d);
             pages.add(newPage);
           }
-        } catch (Exception ex) {
-          Log.e("DroidMain", "Something went wrong.", ex);
-          continue outer;
+        } catch (IndexOutOfBoundsException | NullPointerException | StaleObjectException ignored) {
         }
       }
     }
     return model;
   }
-
 }
+
+

@@ -1,7 +1,7 @@
 package com.github.cheapmon.apc.droid.extract;
 
-import android.graphics.Rect;
 import android.support.test.uiautomator.UiObject2;
+import com.github.cheapmon.apc.droid.extract.ExtractionHelper.DroidSelector;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Document;
@@ -18,9 +18,9 @@ import org.w3c.dom.Element;
 public class Page {
 
   /**
-   * Path to this page. List of coordinates of view clicked to reach this page.
+   * Path to this page. List of elements clicked to reach this page.
    */
-  private List<Rect> path;
+  private List<List<DroidSelector>> path;
 
   /**
    * Root View of this page.
@@ -33,8 +33,8 @@ public class Page {
    * @param obj UiAutomator object of root view
    */
   public Page(UiObject2 obj) {
-    rootView = new View(obj);
-    path = new ArrayList<>();
+    this.rootView = new View(obj);
+    this.path = new ArrayList<>();
   }
 
   /**
@@ -43,16 +43,15 @@ public class Page {
    * @param otherPage Page to merge from
    */
   public void merge(Page otherPage) {
-    rootView.merge(otherPage.rootView);
+    this.rootView.merge(otherPage.rootView);
   }
 
   /**
-   * Add coordinates to path.
+   * Add clicked elements to path.
    */
-  public void addToPath(Page page, Rect rect) {
-    this.path = new ArrayList<>();
-    this.path.addAll(page.getPath());
-    this.path.add(rect);
+  public void addToPath(Page page, List<DroidSelector> selector) {
+    this.path = new ArrayList<>(page.getPath());
+    this.path.add(selector);
   }
 
   /**
@@ -60,7 +59,7 @@ public class Page {
    *
    * @return Path
    */
-  public List<Rect> getPath() {
+  public List<List<DroidSelector>> getPath() {
     return this.path;
   }
 
@@ -70,7 +69,7 @@ public class Page {
    * @return Plain text of layout
    */
   public String dumpText() {
-    return rootView.dumpText();
+    return this.rootView.dumpText();
   }
 
   /**
@@ -81,6 +80,7 @@ public class Page {
    */
   public Element toElement(Document document) {
     Element page = document.createElement("page");
+    page.setAttribute("depth", String.valueOf(this.path.size()));
     page.appendChild(this.rootView.toElement(document));
     return page;
   }

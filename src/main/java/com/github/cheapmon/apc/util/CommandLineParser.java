@@ -59,7 +59,7 @@ public class CommandLineParser {
       options.setDevice(device);
       options.setAlgorithm(algorithm);
       options.setRebuild(rebuild);
-      APCLogger.info(CommandLineParser.class, "APC");
+      APCLogger.logo();
       APCLogger.space();
       APCLogger.info(CommandLineParser.class, String.format("* Found %s application ids",
           Files.lines(file).count()));
