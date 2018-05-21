@@ -64,7 +64,7 @@ class ModelNode {
    */
   public Element toElement(Document document) {
     Element activity = document.createElement("node");
-    activity.setAttribute("activity", this.activityName);
+    activity.setAttribute("id", this.activityName);
     for (Page page : this.pages) {
       activity.appendChild(page.toElement(document));
     }

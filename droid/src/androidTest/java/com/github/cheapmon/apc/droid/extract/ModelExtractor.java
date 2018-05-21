@@ -2,8 +2,9 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiObject2;
-import com.github.cheapmon.apc.droid.extract.ExtractionHelper.DroidSelector;
 import com.github.cheapmon.apc.droid.util.DroidException;
+import com.github.cheapmon.apc.droid.util.DroidSelector;
+import com.github.cheapmon.apc.droid.util.ExtractionHelper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;

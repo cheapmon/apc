@@ -1,4 +1,4 @@
-package com.github.cheapmon.apc.droid.extract;
+package com.github.cheapmon.apc.droid.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +9,13 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-import com.github.cheapmon.apc.droid.util.DroidException;
+import com.github.cheapmon.apc.droid.extract.Page;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * Provide utility for model extraction.
@@ -45,7 +47,7 @@ public class ExtractionHelper {
   /**
    * Timeout for application loading
    */
-  private final int TIMEOUT = 1000;
+  private final int TIMEOUT = 5000;
 
   /**
    * Get new helper for certain application
@@ -82,6 +84,15 @@ public class ExtractionHelper {
       obj.click();
       waitForUpdate();
     }
+  }
+
+  /**
+   * Click random view on layout.
+   */
+  public void clickRandom() {
+    List<UiObject2> list = this.device.findObjects(By.pkg(this.applicationID).clickable(true));
+    list.get(new Random().nextInt(list.size())).click();
+    waitForUpdate();
   }
 
   /**
@@ -135,10 +146,29 @@ public class ExtractionHelper {
   /**
    * Get all clickable views of current layout.
    *
-   * @return List of views
+   * @return List of view selectors
    */
   public List<List<DroidSelector>> getClickable() {
-    List<UiObject2> clickViews = getRoot().findObjects(By.clickable(true));
+    return get(By.clickable(true));
+  }
+
+  /**
+   * Get all buttons of current layout.
+   *
+   * @return List of button selectors
+   */
+  public List<List<DroidSelector>> getButtons() {
+    return get(By.clazz(Pattern.compile(".*Button")));
+  }
+
+  /**
+   * Get certain views of current layout.
+   *
+   * @param selector Selector of views
+   * @return List of view selectors
+   */
+  public List<List<DroidSelector>> get(BySelector selector) {
+    List<UiObject2> clickViews = getRoot().findObjects(selector);
     List<List<DroidSelector>> list = new ArrayList<>();
     for (UiObject2 clickView : clickViews) {
       list.add(getSelector(clickView));
@@ -153,6 +183,9 @@ public class ExtractionHelper {
    * @return Selector for element
    */
   public List<DroidSelector> getSelector(UiObject2 obj) {
+    if (obj == null) {
+      return null;
+    }
     LinkedList<DroidSelector> list = new LinkedList<>();
     BySelector lastSelector = By.clickable(obj.isClickable()).scrollable(obj.isScrollable())
         .clazz(obj.getClassName()).pkg(obj.getApplicationPackage());
@@ -189,7 +222,7 @@ public class ExtractionHelper {
   public UiObject2 find(List<DroidSelector> list) {
     UiObject2 obj = getRoot();
     for (DroidSelector selector : list) {
-      obj = obj.findObjects(selector.s).get(selector.n);
+      obj = obj.findObjects(selector.getS()).get(selector.getN());
     }
     return obj;
   }
@@ -200,43 +233,4 @@ public class ExtractionHelper {
   public void waitForUpdate() {
     this.device.waitForWindowUpdate(this.applicationID, this.TIMEOUT);
   }
-
-  /**
-   * Select element by its properties and relative position.
-   */
-  protected class DroidSelector {
-
-    /**
-     * Selector of this element
-     */
-    private final BySelector s;
-
-    /**
-     * Relative position of this element in its parent container
-     */
-    private final int n;
-
-    /**
-     * Create new selector.
-     *
-     * @param s Elements selector
-     * @param n Elements relative position
-     */
-    public DroidSelector(BySelector s, int n) {
-      this.s = s;
-      this.n = n;
-    }
-
-    /**
-     * Put information about this selector.
-     *
-     * @return Information
-     */
-    @Override
-    public String toString() {
-      return String.format("%s, %s", this.s.toString(), this.n);
-    }
-
-  }
-
 }

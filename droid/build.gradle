@@ -14,6 +14,9 @@ dependencies {
     androidTestCompile group: 'com.android.support.test.uiautomator',
             name: 'uiautomator-v18',
             version: '2.1.2'
+    compile group: 'org.apache.commons',
+            name: 'commons-lang3',
+            version: '3.7'
 }
 
 buildscript {

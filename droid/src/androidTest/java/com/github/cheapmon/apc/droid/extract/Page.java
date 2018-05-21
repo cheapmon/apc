@@ -1,7 +1,7 @@
 package com.github.cheapmon.apc.droid.extract;
 
 import android.support.test.uiautomator.UiObject2;
-import com.github.cheapmon.apc.droid.extract.ExtractionHelper.DroidSelector;
+import com.github.cheapmon.apc.droid.util.DroidSelector;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Document;
