@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -47,7 +46,7 @@ public class ExtractionHelper {
   /**
    * Timeout for application loading
    */
-  private final int TIMEOUT = 5000;
+  private final int TIMEOUT = 1000;
 
   /**
    * Get new helper for certain application
@@ -80,19 +79,10 @@ public class ExtractionHelper {
     this.start();
     UiObject2 obj;
     for (List<DroidSelector> d : path) {
-      obj = find(d);
+      obj = this.find(d);
       obj.click();
-      waitForUpdate();
+      this.waitForUpdate();
     }
-  }
-
-  /**
-   * Click random view on layout.
-   */
-  public void clickRandom() {
-    List<UiObject2> list = this.device.findObjects(By.pkg(this.applicationID).clickable(true));
-    list.get(new Random().nextInt(list.size())).click();
-    waitForUpdate();
   }
 
   /**
@@ -124,7 +114,7 @@ public class ExtractionHelper {
    * @return Root view
    */
   public UiObject2 getRoot() {
-    BySelector drawerLayout = By.clazz("android.support.v4.widget.DrawerLayout");
+    BySelector drawerLayout = By.clazz(Pattern.compile(".*\\.DrawerLayout"));
     if (this.device.hasObject(drawerLayout)) {
       if (this.device.findObject(drawerLayout) != null
           && this.device.findObject(drawerLayout).getChildren().size() > 1) {
@@ -140,7 +130,7 @@ public class ExtractionHelper {
    * @return Resulting page
    */
   public Page getPage() {
-    return new Page(getRoot());
+    return new Page(this.getRoot());
   }
 
   /**
@@ -149,16 +139,7 @@ public class ExtractionHelper {
    * @return List of view selectors
    */
   public List<List<DroidSelector>> getClickable() {
-    return get(By.clickable(true));
-  }
-
-  /**
-   * Get all buttons of current layout.
-   *
-   * @return List of button selectors
-   */
-  public List<List<DroidSelector>> getButtons() {
-    return get(By.clazz(Pattern.compile(".*Button")));
+    return this.get(By.clickable(true));
   }
 
   /**
@@ -168,10 +149,10 @@ public class ExtractionHelper {
    * @return List of view selectors
    */
   public List<List<DroidSelector>> get(BySelector selector) {
-    List<UiObject2> clickViews = getRoot().findObjects(selector);
+    List<UiObject2> clickViews = this.getRoot().findObjects(selector);
     List<List<DroidSelector>> list = new ArrayList<>();
     for (UiObject2 clickView : clickViews) {
-      list.add(getSelector(clickView));
+      list.add(this.getSelector(clickView));
     }
     return list;
   }
@@ -192,9 +173,14 @@ public class ExtractionHelper {
     Rect lastBounds = obj.getVisibleBounds();
     obj = obj.getParent();
     BySelector selector;
-    while (obj != null && !obj.equals(getRoot().getParent())) {
-      selector = By.clickable(obj.isClickable()).scrollable(obj.isScrollable())
-          .clazz(obj.getClassName()).pkg(obj.getApplicationPackage()).hasChild(lastSelector);
+    while (obj != null && !obj.equals(this.getRoot().getParent())) {
+      if (obj.isScrollable()) {
+        selector = By.clickable(obj.isClickable()).scrollable(true)
+            .clazz(obj.getClassName()).pkg(obj.getApplicationPackage());
+      } else {
+        selector = By.clickable(obj.isClickable()).scrollable(false)
+            .clazz(obj.getClassName()).pkg(obj.getApplicationPackage()).hasChild(lastSelector);
+      }
       if (obj.findObjects(lastSelector).size() > 1) {
         for (int i = 0; i < obj.findObjects(lastSelector).size(); i++) {
           UiObject2 o = obj.findObjects(lastSelector).get(i);
@@ -220,7 +206,7 @@ public class ExtractionHelper {
    * @return Element
    */
   public UiObject2 find(List<DroidSelector> list) {
-    UiObject2 obj = getRoot();
+    UiObject2 obj = this.getRoot();
     for (DroidSelector selector : list) {
       obj = obj.findObjects(selector.getS()).get(selector.getN());
     }

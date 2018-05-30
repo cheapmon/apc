@@ -68,6 +68,7 @@ public class ModelExtractor {
           clickView.click();
           this.e.waitForUpdate();
           Page newPage = this.e.getPage();
+          newPage.addToPath(page, d);
           boolean isNew;
           try {
             isNew = model.add(newPage, this.e.getActivityName());
@@ -75,7 +76,6 @@ public class ModelExtractor {
             continue;
           }
           if (isNew) {
-            newPage.addToPath(page, d);
             pages.add(newPage);
           }
         } catch (IndexOutOfBoundsException | NullPointerException | StaleObjectException ignored) {
