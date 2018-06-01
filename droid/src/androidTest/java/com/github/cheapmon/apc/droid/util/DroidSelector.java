@@ -73,7 +73,7 @@ public class DroidSelector {
    */
   @Override
   public String toString() {
-    return String.format("%selector, %selector", this.selector.toString(), this.pos);
+    return String.format("%s, %s, %s", this.selector.toString(), this.pos, this.offset);
   }
 
 }
