@@ -12,22 +12,31 @@ public class DroidSelector {
   /**
    * Selector of this element
    */
-  private final BySelector s;
+  private final BySelector selector;
 
   /**
    * Relative position of this element in its parent container
    */
-  private final int n;
+  private final int pos;
+
+  /**
+   * Offset of this element in its ancestors<br><br>
+   *
+   * If this element is positioned in a scroll container and only visible upon the nth scroll, its
+   * offset is n.
+   */
+  private final int offset;
 
   /**
    * Create new selector.
    *
-   * @param s Elements selector
-   * @param n Elements relative position
+   * @param selector Elements selector
+   * @param pos Elements relative position
    */
-  public DroidSelector(BySelector s, int n) {
-    this.s = s;
-    this.n = n;
+  public DroidSelector(BySelector selector, int pos, int offset) {
+    this.selector = selector;
+    this.pos = pos;
+    this.offset = offset;
   }
 
   /**
@@ -35,8 +44,8 @@ public class DroidSelector {
    *
    * @return Selector
    */
-  public BySelector getS() {
-    return this.s;
+  public BySelector getSelector() {
+    return this.selector;
   }
 
   /**
@@ -44,8 +53,17 @@ public class DroidSelector {
    *
    * @return Position
    */
-  public int getN() {
-    return this.n;
+  public int getPos() {
+    return this.pos;
+  }
+
+  /**
+   * Get offset of element.
+   *
+   * @return Offset
+   */
+  public int getOffset() {
+    return this.offset;
   }
 
   /**
@@ -55,7 +73,7 @@ public class DroidSelector {
    */
   @Override
   public String toString() {
-    return String.format("%s, %s", this.s.toString(), this.n);
+    return String.format("%selector, %selector", this.selector.toString(), this.pos);
   }
 
 }

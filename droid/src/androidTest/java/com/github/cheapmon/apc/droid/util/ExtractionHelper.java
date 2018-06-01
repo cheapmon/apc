@@ -185,12 +185,12 @@ public class ExtractionHelper {
         for (int i = 0; i < obj.findObjects(lastSelector).size(); i++) {
           UiObject2 o = obj.findObjects(lastSelector).get(i);
           if (o.getVisibleBounds().equals(lastBounds)) {
-            list.addFirst(new DroidSelector(lastSelector, i));
+            list.addFirst(new DroidSelector(lastSelector, i, 0));
             break;
           }
         }
       } else {
-        list.addFirst(new DroidSelector(lastSelector, 0));
+        list.addFirst(new DroidSelector(lastSelector, 0, 0));
       }
       lastSelector = selector;
       lastBounds = obj.getVisibleBounds();
@@ -208,7 +208,7 @@ public class ExtractionHelper {
   public UiObject2 find(List<DroidSelector> list) {
     UiObject2 obj = this.getRoot();
     for (DroidSelector selector : list) {
-      obj = obj.findObjects(selector.getS()).get(selector.getN());
+      obj = obj.findObjects(selector.getSelector()).get(selector.getPos());
     }
     return obj;
   }
