@@ -80,9 +80,33 @@ public class Page {
    */
   public Element toElement(Document document) {
     Element page = document.createElement("page");
-    page.setAttribute("depth", String.valueOf(this.path.size()));
+    Element path = document.createElement("path");
+    for (List<DroidSelector> list : this.path) {
+      path.appendChild(this.fromSelector(document, list.get(list.size() - 1)));
+    }
+    page.appendChild(path);
     page.appendChild(this.rootView.toElement(document));
     return page;
+  }
+
+  /**
+   * Create XML node from selector variables and string representation.
+   *
+   * @param selector Selector of element
+   * @return XML node representation of element
+   */
+  private Element fromSelector(Document document, DroidSelector selector) {
+    Element step = document.createElement("step");
+    String[] l = selector.getSelector().toString().split("'");
+    step.setAttribute("class", l[1].substring(2, l[1].length() - 2));
+    step.setAttribute("pkg", l[3].substring(2, l[3].length() - 2));
+    step.setAttribute("clickable", l[5]);
+    step.setAttribute("scrollable", l[7]);
+    step.setAttribute("n", String.valueOf(selector.getPos()));
+    step.setAttribute("offset", String.valueOf(selector.getOffset()));
+    step.setAttribute("bounds", selector.getBounds().toShortString());
+    step.setAttribute("text", selector.getText());
+    return step;
   }
 
   /**

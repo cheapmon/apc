@@ -93,6 +93,15 @@ public class ExtractionHelper {
   }
 
   /**
+   * Get bounds of current Display.
+   *
+   * @return Display bounds
+   */
+  public Rect getDisplayBounds() {
+    return this.getRoot().getVisibleBounds();
+  }
+
+  /**
    * Get current activity.
    *
    * @return Activity name
@@ -137,7 +146,20 @@ public class ExtractionHelper {
    * @return Resulting page
    */
   public Page getPage() {
-    return new Page(this.getRoot());
+    Page page = new Page(this.getRoot());
+    for (UiObject2 cont : this.getRoot().findObjects(By.scrollable(true))) {
+      try {
+        for (int i = 0; i < SCROLL_MAX; i++) {
+          boolean canScroll = cont.scroll(Direction.DOWN, 1);
+          if (!canScroll) {
+            break;
+          }
+          page.merge(new Page(this.getRoot()));
+        }
+      } catch (NullPointerException | StaleObjectException ignored) {
+      }
+    }
+    return page;
   }
 
   /**
@@ -146,7 +168,6 @@ public class ExtractionHelper {
    * @return List of view selectors
    */
   public List<List<DroidSelector>> getClickable() {
-    //return this.get(By.clickable(true));
     List<List<DroidSelector>> list = this.get(By.clickable(true));
     List<UiObject2> scrollContainer = this.getRoot().findObjects(By.scrollable(true));
     for (UiObject2 cont : scrollContainer) {
@@ -197,6 +218,8 @@ public class ExtractionHelper {
     Rect lastBounds = obj.getVisibleBounds();
     obj = obj.getParent();
     BySelector selector;
+    Rect bounds = obj.getVisibleBounds();
+    String text = obj.getText();
     while (obj != null && !obj.equals(this.getRoot().getParent())) {
       if (obj.isScrollable()) {
         selector = By.clickable(obj.isClickable()).scrollable(true)
@@ -210,15 +233,17 @@ public class ExtractionHelper {
           UiObject2 o = obj.findObjects(lastSelector).get(i);
           if (o.getVisibleBounds().equals(lastBounds)) {
             // TODO: Only add offset for scrollable element
-            list.addFirst(new DroidSelector(lastSelector, i, offset));
+            list.addFirst(new DroidSelector(lastSelector, i, offset).setMeta(bounds, text));
             break;
           }
         }
       } else {
-        list.addFirst(new DroidSelector(lastSelector, 0, offset));
+        list.addFirst(new DroidSelector(lastSelector, 0, offset).setMeta(bounds, text));
       }
       lastSelector = selector;
       lastBounds = obj.getVisibleBounds();
+      bounds = obj.getVisibleBounds();
+      text = obj.getText();
       obj = obj.getParent();
     }
     return list;

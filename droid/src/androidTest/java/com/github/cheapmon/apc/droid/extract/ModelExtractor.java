@@ -50,7 +50,7 @@ public class ModelExtractor {
   public Model getModel() {
     this.e.start();
     Queue<Page> pages = new LinkedList<>();
-    Model model = new Model(this.id);
+    Model model = new Model(this.id, this.e.getDisplayBounds());
     Page page = this.e.getPage();
     pages.add(page);
     while (pages.size() > 0) {

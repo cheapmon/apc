@@ -1,5 +1,6 @@
 package com.github.cheapmon.apc.droid.util;
 
+import android.graphics.Rect;
 import android.support.test.uiautomator.BySelector;
 
 /**
@@ -28,6 +29,16 @@ public class DroidSelector {
   private final int offset;
 
   /**
+   * Bounds of this element (meta)
+   */
+  private Rect boundsExtra;
+
+  /**
+   * Text of this element (meta)
+   */
+  private String textExtra;
+
+  /**
    * Create new selector.
    *
    * @param selector Elements selector
@@ -37,6 +48,20 @@ public class DroidSelector {
     this.selector = selector;
     this.pos = pos;
     this.offset = offset;
+  }
+
+  /**
+   * Add meta information of this element.<br><br>
+   *
+   * This information is added to the model, but isn't relevant for finding this element.
+   *
+   * @param bounds Bounds of Element
+   * @param text Text of Element
+   */
+  public DroidSelector setMeta(Rect bounds, String text) {
+    this.boundsExtra = bounds;
+    this.textExtra = text;
+    return this;
   }
 
   /**
@@ -67,13 +92,32 @@ public class DroidSelector {
   }
 
   /**
+   * Get bounds of element.
+   *
+   * @return Bounds
+   */
+  public Rect getBounds() {
+    return this.boundsExtra;
+  }
+
+  /**
+   * Get text of element.
+   *
+   * @return Text
+   */
+  public String getText() {
+    return (this.textExtra == null) ? "" : this.textExtra;
+  }
+
+  /**
    * Put information about this selector.
    *
    * @return Information
    */
   @Override
   public String toString() {
-    return String.format("%s, %s, %s", this.selector.toString(), this.pos, this.offset);
+    return String.format("%s, %s, %s, %s, %s", this.selector.toString(), this.pos, this.offset,
+        this.boundsExtra.toShortString(), this.textExtra);
   }
 
 }
