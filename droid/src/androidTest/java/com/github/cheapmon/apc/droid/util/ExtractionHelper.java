@@ -6,6 +6,8 @@ import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.Direction;
+import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
@@ -47,6 +49,11 @@ public class ExtractionHelper {
    * Timeout for application loading
    */
   private final int TIMEOUT = 1000;
+
+  /**
+   * Maximum number of scroll gestures performed on one container
+   */
+  private static final int SCROLL_MAX = 3;
 
   /**
    * Get new helper for certain application
@@ -139,7 +146,24 @@ public class ExtractionHelper {
    * @return List of view selectors
    */
   public List<List<DroidSelector>> getClickable() {
-    return this.get(By.clickable(true));
+    //return this.get(By.clickable(true));
+    List<List<DroidSelector>> list = this.get(By.clickable(true));
+    List<UiObject2> scrollContainer = this.getRoot().findObjects(By.scrollable(true));
+    for (UiObject2 cont : scrollContainer) {
+      try {
+        for (int i = 0; i < SCROLL_MAX; i++) {
+          boolean canScroll = cont.scroll(Direction.DOWN, 1);
+          if (!canScroll) {
+            break;
+          }
+          for (UiObject2 clickView : cont.findObjects(By.clickable(true))) {
+            list.add(this.getSelector(clickView, i));
+          }
+        }
+      } catch (NullPointerException | StaleObjectException ignored) {
+      }
+    }
+    return list;
   }
 
   /**
@@ -152,7 +176,7 @@ public class ExtractionHelper {
     List<UiObject2> clickViews = this.getRoot().findObjects(selector);
     List<List<DroidSelector>> list = new ArrayList<>();
     for (UiObject2 clickView : clickViews) {
-      list.add(this.getSelector(clickView));
+      list.add(this.getSelector(clickView, 0));
     }
     return list;
   }
@@ -163,7 +187,7 @@ public class ExtractionHelper {
    * @param obj UI element
    * @return Selector for element
    */
-  public List<DroidSelector> getSelector(UiObject2 obj) {
+  public List<DroidSelector> getSelector(UiObject2 obj, int offset) {
     if (obj == null) {
       return null;
     }
@@ -185,12 +209,13 @@ public class ExtractionHelper {
         for (int i = 0; i < obj.findObjects(lastSelector).size(); i++) {
           UiObject2 o = obj.findObjects(lastSelector).get(i);
           if (o.getVisibleBounds().equals(lastBounds)) {
-            list.addFirst(new DroidSelector(lastSelector, i, 0));
+            // TODO: Only add offset for scrollable element
+            list.addFirst(new DroidSelector(lastSelector, i, offset));
             break;
           }
         }
       } else {
-        list.addFirst(new DroidSelector(lastSelector, 0, 0));
+        list.addFirst(new DroidSelector(lastSelector, 0, offset));
       }
       lastSelector = selector;
       lastBounds = obj.getVisibleBounds();
@@ -209,6 +234,11 @@ public class ExtractionHelper {
     UiObject2 obj = this.getRoot();
     for (DroidSelector selector : list) {
       obj = obj.findObjects(selector.getSelector()).get(selector.getPos());
+      if (obj.isScrollable()) {
+        for (int i = 0; i < selector.getOffset(); i++) {
+          obj.scroll(Direction.DOWN, 1);
+        }
+      }
     }
     return obj;
   }
