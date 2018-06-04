@@ -7,6 +7,8 @@ import com.github.cheapmon.apc.droid.extract.Model;
 import com.github.cheapmon.apc.droid.extract.ModelExtractor;
 import com.github.cheapmon.apc.droid.install.GooglePlayWizard;
 import com.github.cheapmon.apc.droid.install.GooglePlayWizard.InstallState;
+import com.github.cheapmon.apc.droid.search.SearchAlgorithm;
+import com.github.cheapmon.apc.droid.search.SearchHelper;
 import com.github.cheapmon.apc.droid.util.DroidException;
 import com.github.cheapmon.apc.droid.util.DroidLogger;
 import java.io.FileNotFoundException;
@@ -62,7 +64,12 @@ public class DroidMain {
       }
       send(null, null);
     } else {
-      DroidLogger.log("POLICY extraction is not supported yet.");
+      try {
+        SearchAlgorithm algorithm = SearchHelper.get(this.algorithm).newInstance();
+        DroidLogger.log(String.valueOf(algorithm.run(this.ids[0])));
+      } catch (InstantiationException | IllegalAccessException ex) {
+        throw new DroidException("Running algorithm failed", ex);
+      }
     }
   }
 

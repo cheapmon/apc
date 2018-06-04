@@ -90,9 +90,9 @@ public class CommandLineParser {
     Options options = new Options();
     options.addOption("h", "help", false, "This help message");
     options.addOption(Option.builder("i").longOpt("id").hasArgs().desc("App ids").build());
-    options.addOption("f", "file", true, "File containing app ids, separated by newlines");
+    options.addOption("f", "file", true, "File containing app ids");
     options.addOption("d", "device", true, "Device to run extraction on");
-    options.addOption("s", "search", true, "Searching algorithm");
+    options.addOption("s", "search", true, "Search algorithm");
     options.addOption("m", "extract-model", false, "Extract model of app");
     options.addOption("c", "clean", false, "Rebuild tests");
     return options;

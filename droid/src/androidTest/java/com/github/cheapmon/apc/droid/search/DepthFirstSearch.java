@@ -1,5 +1,9 @@
 package com.github.cheapmon.apc.droid.search;
 
-public class DepthFirstSearch implements SearchingAlgorithm {
+public class DepthFirstSearch implements SearchAlgorithm {
 
+  @Override
+  public String run(String id) {
+    return null;
+  }
 }

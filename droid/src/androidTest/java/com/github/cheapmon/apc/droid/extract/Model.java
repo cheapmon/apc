@@ -1,5 +1,6 @@
 package com.github.cheapmon.apc.droid.extract;
 
+import android.graphics.Rect;
 import com.github.cheapmon.apc.droid.util.DroidException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -38,12 +39,19 @@ public class Model {
   private List<ModelNode> nodes;
 
   /**
+   * Display bounds of model
+   */
+  private Rect bounds;
+
+  /**
    * Instantiate new model from scratch.
    *
    * @param id App identification model belongs to
+   * @param bounds Display bounds of model
    */
-  public Model(String id) {
+  public Model(String id, Rect bounds) {
     this.id = id;
+    this.bounds = bounds;
     this.nodes = new ArrayList<>();
   }
 
@@ -76,6 +84,7 @@ public class Model {
       Document document = documentBuilder.newDocument();
       Element root = document.createElement("model");
       root.setAttribute("id", this.id);
+      root.setAttribute("bounds", this.bounds.toShortString());
       document.appendChild(root);
       for (ModelNode node : this.nodes) {
         root.appendChild(node.toElement(document));

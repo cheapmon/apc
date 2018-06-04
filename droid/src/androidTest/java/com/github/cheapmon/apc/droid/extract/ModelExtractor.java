@@ -2,8 +2,9 @@ package com.github.cheapmon.apc.droid.extract;
 
 import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiObject2;
-import com.github.cheapmon.apc.droid.extract.ExtractionHelper.DroidSelector;
 import com.github.cheapmon.apc.droid.util.DroidException;
+import com.github.cheapmon.apc.droid.util.DroidSelector;
+import com.github.cheapmon.apc.droid.util.ExtractionHelper;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -49,7 +50,7 @@ public class ModelExtractor {
   public Model getModel() {
     this.e.start();
     Queue<Page> pages = new LinkedList<>();
-    Model model = new Model(this.id);
+    Model model = new Model(this.id, this.e.getDisplayBounds());
     Page page = this.e.getPage();
     pages.add(page);
     while (pages.size() > 0) {
@@ -67,6 +68,7 @@ public class ModelExtractor {
           clickView.click();
           this.e.waitForUpdate();
           Page newPage = this.e.getPage();
+          newPage.addToPath(page, d);
           boolean isNew;
           try {
             isNew = model.add(newPage, this.e.getActivityName());
@@ -74,7 +76,6 @@ public class ModelExtractor {
             continue;
           }
           if (isNew) {
-            newPage.addToPath(page, d);
             pages.add(newPage);
           }
         } catch (IndexOutOfBoundsException | NullPointerException | StaleObjectException ignored) {

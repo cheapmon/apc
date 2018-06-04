@@ -1,4 +1,4 @@
-package com.github.cheapmon.apc.droid.extract;
+package com.github.cheapmon.apc.droid.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,14 +6,17 @@ import android.graphics.Rect;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.BySelector;
+import android.support.test.uiautomator.Direction;
+import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-import com.github.cheapmon.apc.droid.util.DroidException;
+import com.github.cheapmon.apc.droid.extract.Page;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Provide utility for model extraction.
@@ -48,6 +51,11 @@ public class ExtractionHelper {
   private final int TIMEOUT = 1000;
 
   /**
+   * Maximum number of scroll gestures performed on one container
+   */
+  private static final int SCROLL_MAX = 3;
+
+  /**
    * Get new helper for certain application
    *
    * @param applicationID ID of application
@@ -78,10 +86,19 @@ public class ExtractionHelper {
     this.start();
     UiObject2 obj;
     for (List<DroidSelector> d : path) {
-      obj = find(d);
+      obj = this.find(d);
       obj.click();
-      waitForUpdate();
+      this.waitForUpdate();
     }
+  }
+
+  /**
+   * Get bounds of current Display.
+   *
+   * @return Display bounds
+   */
+  public Rect getDisplayBounds() {
+    return this.getRoot().getVisibleBounds();
   }
 
   /**
@@ -113,7 +130,7 @@ public class ExtractionHelper {
    * @return Root view
    */
   public UiObject2 getRoot() {
-    BySelector drawerLayout = By.clazz("android.support.v4.widget.DrawerLayout");
+    BySelector drawerLayout = By.clazz(Pattern.compile(".*\\.DrawerLayout"));
     if (this.device.hasObject(drawerLayout)) {
       if (this.device.findObject(drawerLayout) != null
           && this.device.findObject(drawerLayout).getChildren().size() > 1) {
@@ -129,19 +146,58 @@ public class ExtractionHelper {
    * @return Resulting page
    */
   public Page getPage() {
-    return new Page(getRoot());
+    Page page = new Page(this.getRoot());
+    for (UiObject2 cont : this.getRoot().findObjects(By.scrollable(true))) {
+      try {
+        for (int i = 0; i < SCROLL_MAX; i++) {
+          boolean canScroll = cont.scroll(Direction.DOWN, 1);
+          if (!canScroll) {
+            break;
+          }
+          page.merge(new Page(this.getRoot()));
+        }
+      } catch (NullPointerException | StaleObjectException ignored) {
+      }
+    }
+    return page;
   }
 
   /**
    * Get all clickable views of current layout.
    *
-   * @return List of views
+   * @return List of view selectors
    */
   public List<List<DroidSelector>> getClickable() {
-    List<UiObject2> clickViews = getRoot().findObjects(By.clickable(true));
+    List<List<DroidSelector>> list = this.get(By.clickable(true));
+    List<UiObject2> scrollContainer = this.getRoot().findObjects(By.scrollable(true));
+    for (UiObject2 cont : scrollContainer) {
+      try {
+        for (int i = 0; i < SCROLL_MAX; i++) {
+          boolean canScroll = cont.scroll(Direction.DOWN, 1);
+          if (!canScroll) {
+            break;
+          }
+          for (UiObject2 clickView : cont.findObjects(By.clickable(true))) {
+            list.add(this.getSelector(clickView, i));
+          }
+        }
+      } catch (NullPointerException | StaleObjectException ignored) {
+      }
+    }
+    return list;
+  }
+
+  /**
+   * Get certain views of current layout.
+   *
+   * @param selector Selector of views
+   * @return List of view selectors
+   */
+  public List<List<DroidSelector>> get(BySelector selector) {
+    List<UiObject2> clickViews = this.getRoot().findObjects(selector);
     List<List<DroidSelector>> list = new ArrayList<>();
     for (UiObject2 clickView : clickViews) {
-      list.add(getSelector(clickView));
+      list.add(this.getSelector(clickView, 0));
     }
     return list;
   }
@@ -152,29 +208,42 @@ public class ExtractionHelper {
    * @param obj UI element
    * @return Selector for element
    */
-  public List<DroidSelector> getSelector(UiObject2 obj) {
+  public List<DroidSelector> getSelector(UiObject2 obj, int offset) {
+    if (obj == null) {
+      return null;
+    }
     LinkedList<DroidSelector> list = new LinkedList<>();
     BySelector lastSelector = By.clickable(obj.isClickable()).scrollable(obj.isScrollable())
         .clazz(obj.getClassName()).pkg(obj.getApplicationPackage());
     Rect lastBounds = obj.getVisibleBounds();
     obj = obj.getParent();
     BySelector selector;
-    while (obj != null && !obj.equals(getRoot().getParent())) {
-      selector = By.clickable(obj.isClickable()).scrollable(obj.isScrollable())
-          .clazz(obj.getClassName()).pkg(obj.getApplicationPackage()).hasChild(lastSelector);
+    Rect bounds = obj.getVisibleBounds();
+    String text = obj.getText();
+    while (obj != null && !obj.equals(this.getRoot().getParent())) {
+      if (obj.isScrollable()) {
+        selector = By.clickable(obj.isClickable()).scrollable(true)
+            .clazz(obj.getClassName()).pkg(obj.getApplicationPackage());
+      } else {
+        selector = By.clickable(obj.isClickable()).scrollable(false)
+            .clazz(obj.getClassName()).pkg(obj.getApplicationPackage()).hasChild(lastSelector);
+      }
       if (obj.findObjects(lastSelector).size() > 1) {
         for (int i = 0; i < obj.findObjects(lastSelector).size(); i++) {
           UiObject2 o = obj.findObjects(lastSelector).get(i);
           if (o.getVisibleBounds().equals(lastBounds)) {
-            list.addFirst(new DroidSelector(lastSelector, i));
+            // TODO: Only add offset for scrollable element
+            list.addFirst(new DroidSelector(lastSelector, i, offset).setMeta(bounds, text));
             break;
           }
         }
       } else {
-        list.addFirst(new DroidSelector(lastSelector, 0));
+        list.addFirst(new DroidSelector(lastSelector, 0, offset).setMeta(bounds, text));
       }
       lastSelector = selector;
       lastBounds = obj.getVisibleBounds();
+      bounds = obj.getVisibleBounds();
+      text = obj.getText();
       obj = obj.getParent();
     }
     return list;
@@ -187,9 +256,14 @@ public class ExtractionHelper {
    * @return Element
    */
   public UiObject2 find(List<DroidSelector> list) {
-    UiObject2 obj = getRoot();
+    UiObject2 obj = this.getRoot();
     for (DroidSelector selector : list) {
-      obj = obj.findObjects(selector.s).get(selector.n);
+      obj = obj.findObjects(selector.getSelector()).get(selector.getPos());
+      if (obj.isScrollable()) {
+        for (int i = 0; i < selector.getOffset(); i++) {
+          obj.scroll(Direction.DOWN, 1);
+        }
+      }
     }
     return obj;
   }
@@ -200,43 +274,4 @@ public class ExtractionHelper {
   public void waitForUpdate() {
     this.device.waitForWindowUpdate(this.applicationID, this.TIMEOUT);
   }
-
-  /**
-   * Select element by its properties and relative position.
-   */
-  protected class DroidSelector {
-
-    /**
-     * Selector of this element
-     */
-    private final BySelector s;
-
-    /**
-     * Relative position of this element in its parent container
-     */
-    private final int n;
-
-    /**
-     * Create new selector.
-     *
-     * @param s Elements selector
-     * @param n Elements relative position
-     */
-    public DroidSelector(BySelector s, int n) {
-      this.s = s;
-      this.n = n;
-    }
-
-    /**
-     * Put information about this selector.
-     *
-     * @return Information
-     */
-    @Override
-    public String toString() {
-      return String.format("%s, %s", this.s.toString(), this.n);
-    }
-
-  }
-
 }
