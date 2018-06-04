@@ -1,8 +1,6 @@
 package com.github.cheapmon.apc.droid.search;
 
-import com.github.cheapmon.apc.droid.util.DroidLogger;
 import java.util.HashMap;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility for search algorithms.
@@ -38,7 +36,8 @@ public class SearchHelper {
   }
 
   public static boolean isPolicy(String text) {
-    int matches = 0;
+    // TODO: Add educated policy matching condition
+    /*int matches = 0;
     if (StringUtils.split(text, " ").length > WORD_COUNT) {
       for (String keyword : PRIVACY_POLICY_KEYWORDS) {
         matches += StringUtils.countMatches(text, keyword);
@@ -48,7 +47,7 @@ public class SearchHelper {
         }
       }
     }
-    DroidLogger.log(String.format("Matches: %d", matches));
+    DroidLogger.log(String.format("Matches: %d", matches));*/
     return false;
   }
 }
