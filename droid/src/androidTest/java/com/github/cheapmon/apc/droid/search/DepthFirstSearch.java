@@ -11,8 +11,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Search an app for a policy applying depth first search.
+ *
+ * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com>cheapmon</a>
+ */
 public class DepthFirstSearch implements SearchAlgorithm {
 
+  /**
+   * Search app for policy.
+   *
+   * @param id Application identification
+   * @return Policy text
+   */
   @Override
   public String run(String id) {
     ExtractionHelper e = new ExtractionHelper(id);

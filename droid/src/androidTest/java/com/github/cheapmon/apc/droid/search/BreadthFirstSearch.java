@@ -11,8 +11,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * Search an app by applying breadth first search.
+ *
+ * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com>cheapmon</a>
+ */
 public class BreadthFirstSearch implements SearchAlgorithm {
 
+  /**
+   * Search for policy.
+   *
+   * @param id Application identification
+   * @return Policy text
+   */
   @Override
   public String run(String id) {
     ExtractionHelper e = new ExtractionHelper(id);

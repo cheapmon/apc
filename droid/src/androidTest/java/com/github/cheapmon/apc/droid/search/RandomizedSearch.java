@@ -10,10 +10,25 @@ import com.github.cheapmon.apc.droid.util.ExtractionHelper;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Search an app for a policy using random clicks and scrolls.
+ *
+ * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com>cheapmon</a>
+ */
 public class RandomizedSearch implements SearchAlgorithm {
 
+  /**
+   * Maximum number of clicks used until stopping search
+   */
   private static final int CLICK_MAX = 1000;
 
+  /**
+   * Search policy.
+   *
+   * @param id Application identification
+   * @return Policy text
+   * @throws DroidException Activity name can't be found
+   */
   @Override
   public String run(String id) throws DroidException {
     Random r = new Random();
