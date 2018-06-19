@@ -54,3 +54,10 @@ android {
         abortOnError false
     }
 }
+
+task doc(type: Javadoc) {
+    source = android.sourceSets.androidTest.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("../build/doc/droid")
+    failOnError false
+}
