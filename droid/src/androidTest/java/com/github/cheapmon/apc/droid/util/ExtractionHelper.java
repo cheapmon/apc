@@ -11,6 +11,7 @@ import android.support.test.uiautomator.StaleObjectException;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
+import android.widget.TextView;
 import com.github.cheapmon.apc.droid.extract.Page;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class ExtractionHelper {
   /**
    * Timeout for application loading
    */
-  private final int TIMEOUT = 1000;
+  private final int TIMEOUT = 2500;
 
   /**
    * Maximum number of scroll gestures performed on one container
@@ -87,9 +88,25 @@ public class ExtractionHelper {
     UiObject2 obj;
     for (List<DroidSelector> d : path) {
       obj = this.find(d);
-      obj.click();
-      this.waitForUpdate();
+      this.click(obj);
     }
+  }
+
+  /**
+   * Click view and wait for the screen to update.
+   *
+   * @param obj UI element to click
+   */
+  public void click(UiObject2 obj) {
+    if (obj.getClassName().equals(TextView.class.getName())) {
+      Rect bounds = obj.getVisibleBounds();
+      int x = bounds.centerX();
+      int y = bounds.centerY() + (bounds.bottom - bounds.top) / 4;
+      this.device.click(x, y);
+    } else {
+      obj.click();
+    }
+    this.waitForUpdate();
   }
 
   /**
@@ -130,18 +147,32 @@ public class ExtractionHelper {
    * @return Root view
    */
   public UiObject2 getRoot() {
-    BySelector drawerLayout = By.clazz(Pattern.compile(".*\\.DrawerLayout"));
+    BySelector drawerLayout = By.clazz(Pattern.compile(".*" + Pattern.quote(".DrawerLayout")));
     if (this.device.hasObject(drawerLayout)) {
       if (this.device.findObject(drawerLayout) != null
           && this.device.findObject(drawerLayout).getChildren().size() > 1) {
-        return this.device.findObject(drawerLayout).getChildren().get(1);
+        // TODO: Find out which child is the navigation menu - This approach is suboptimal
+        int area = Integer.MAX_VALUE;
+        int smallestID = 0;
+        List<UiObject2> children = this.device.findObject(drawerLayout).getChildren();
+        for (int i = 0; i < children.size(); i++) {
+          UiObject2 child = children.get(i);
+          Rect bounds = child.getVisibleBounds();
+          int newArea = (bounds.bottom - bounds.top) * (bounds.right - bounds.left);
+          if (newArea < area) {
+            area = newArea;
+            smallestID = i;
+          }
+        }
+        return this.device.findObject(drawerLayout).getChildren().get(smallestID);
+        //return this.device.findObject(drawerLayout).getChildren().get(1);
       }
     }
     return this.device.findObject(By.pkg(this.applicationID).depth(0));
   }
 
   /**
-   * Get page representation of current layout.
+   * Get page representation of current layout, dependent of id.
    *
    * @return Resulting page
    */
@@ -163,6 +194,17 @@ public class ExtractionHelper {
   }
 
   /**
+   * Get page representation of current layout, independent of id.
+   */
+  public Page getPageFromAnyApp() {
+    UiObject2 root = this.device.findObject(By.pkg(this.device.getCurrentPackageName()).depth(0));
+    if (root != null) {
+      return new Page(root);
+    }
+    return null;
+  }
+
+  /**
    * Get all clickable views of current layout.
    *
    * @return List of view selectors
@@ -178,7 +220,7 @@ public class ExtractionHelper {
             break;
           }
           for (UiObject2 clickView : cont.findObjects(By.clickable(true))) {
-            list.add(this.getSelector(clickView, i));
+            list.add(this.getSelector(clickView, i + 1));
           }
         }
       } catch (NullPointerException | StaleObjectException ignored) {
@@ -194,10 +236,10 @@ public class ExtractionHelper {
    * @return List of view selectors
    */
   public List<List<DroidSelector>> get(BySelector selector) {
-    List<UiObject2> clickViews = this.getRoot().findObjects(selector);
+    List<UiObject2> selectedViews = this.getRoot().findObjects(selector);
     List<List<DroidSelector>> list = new ArrayList<>();
-    for (UiObject2 clickView : clickViews) {
-      list.add(this.getSelector(clickView, 0));
+    for (UiObject2 view : selectedViews) {
+      list.add(this.getSelector(view, 0));
     }
     return list;
   }
@@ -273,5 +315,7 @@ public class ExtractionHelper {
    */
   public void waitForUpdate() {
     this.device.waitForWindowUpdate(this.applicationID, this.TIMEOUT);
+    this.device.wait(Until.hasObject(By.text(Pattern.compile("[A-z0-9]+"))), this.TIMEOUT);
   }
+
 }

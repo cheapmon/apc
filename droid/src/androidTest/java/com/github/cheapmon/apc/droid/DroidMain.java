@@ -68,9 +68,11 @@ public class DroidMain {
         SearchAlgorithm algorithm = SearchHelper.get(this.algorithm).newInstance();
         for (String id : this.ids) {
           String result = algorithm.run(id);
-          String txt = (result == null) ? "" : result;
-          this.send(txt, id);
+          if (result != null) {
+            this.send(result, id);
+          }
         }
+        this.send(null, null);
       } catch (InstantiationException | IllegalAccessException ex) {
         throw new DroidException("Running algorithm failed", ex);
       }
@@ -129,11 +131,13 @@ public class DroidMain {
       Socket s = new Socket("10.0.2.2", 2000);
       PrintWriter out = new PrintWriter(s.getOutputStream());
       if (txt == null && id == null) {
+        out.print("\n");
         out.print("OK");
       } else {
         out.print(String.format("%s\n", id));
         out.print(txt);
-        out.print("---\n");
+        out.print("\n");
+        out.print("---");
       }
       out.flush();
       out.close();

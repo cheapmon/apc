@@ -8,7 +8,6 @@ import android.support.test.uiautomator.BySelector;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
 import android.support.test.uiautomator.Until;
-import com.github.cheapmon.apc.droid.util.DroidException;
 import java.util.HashMap;
 
 /**
@@ -45,9 +44,8 @@ public class GooglePlayHelper {
    * Open Google Play page for application.
    *
    * @param id Application id
-   * @throws DroidException Device communication fails
    */
-  public void start(String id) throws DroidException {
+  public void start(String id) {
     Uri uri = Uri.parse(String.format("market://details?id=%s", id));
     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

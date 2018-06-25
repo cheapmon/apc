@@ -49,8 +49,7 @@ abstract class QueueBasedSearch implements SearchAlgorithm {
         try {
           e.start(page.getPath());
           UiObject2 clickView = e.find(d);
-          clickView.click();
-          e.waitForUpdate();
+          e.click(clickView);
           Page newPage = e.getPage();
           String txt = newPage.dumpText();
           if (SearchHelper.isPolicy(txt)) {
@@ -72,7 +71,6 @@ abstract class QueueBasedSearch implements SearchAlgorithm {
       addToQueue(newPages);
     }
     return null;
-
   }
 
   /**

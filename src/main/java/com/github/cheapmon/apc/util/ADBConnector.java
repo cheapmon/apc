@@ -210,11 +210,11 @@ public class ADBConnector {
    * @throws APCException Socket communication fails
    */
   private void collect(boolean model) throws APCException {
-    ArrayList<String> inList = new ArrayList<>(2);
     try {
       ServerSocket serverSocket = new ServerSocket(2000);
       outer:
       while (true) {
+        ArrayList<String> inList = new ArrayList<>(2);
         Socket clientSocket = serverSocket.accept();
         BufferedReader clientIn = new BufferedReader(
             new InputStreamReader(clientSocket.getInputStream()));

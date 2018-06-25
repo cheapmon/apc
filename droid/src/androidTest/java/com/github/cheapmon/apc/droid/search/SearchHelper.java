@@ -1,6 +1,8 @@
 package com.github.cheapmon.apc.droid.search;
 
 import java.util.HashMap;
+import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility for search algorithms.
@@ -9,16 +11,29 @@ import java.util.HashMap;
  */
 public class SearchHelper {
 
-  private static final int WORD_COUNT = 2000;
-
-  private static final int MATCH_COUNT = 80;
-
-  public static final String[] PRIVACY_POLICY_KEYWORDS = {
+  /**
+   * Keywords to match a privacy policy
+   */
+  private static final String[] PRIVACY_POLICY_KEYWORDS = {
       "privacy", "policy", "policies", "data", "term", "condition", "use", "tos", "tou", "pp",
       "collect", "eula", "legal", "personal", "save", "store", "daten", "schutz", "erklärung",
       "agb", "dse", "allgemeine", "geschäft", "bedingung", "richt", "linie", "information",
       "erheben", "sammeln", "verarbeiten", "erhoben", "speichern", "erfassen", "persönlich"
   };
+
+  /**
+   * Keywords to look for in the UI
+   */
+  private static final String[] NAVIGATION_KEYWORDS = {
+      "daten", "data", "privat", "privacy", "hilfe", "help", "support", "info", "einstellung",
+      "setting", "über", "about", "impressum", "service", "nutzung", "terms", "bedingung",
+      "rechtlich", "legal"
+  };
+
+  /**
+   * Navigation keywords compiled into regex pattern
+   */
+  public static final Pattern NAVIGATION_REGEX = getNavRegex();
 
   /**
    * Get algorithm class from given label.
@@ -35,19 +50,48 @@ public class SearchHelper {
     return algorithms.get(algorithm);
   }
 
+  /**
+   * Compile keywords to regex.
+   *
+   * @return Regex pattern
+   */
+  private static Pattern getNavRegex() {
+    StringBuilder result = new StringBuilder(".*(");
+    for (int i = 0; i < NAVIGATION_KEYWORDS.length; i++) {
+      String keyword = NAVIGATION_KEYWORDS[i];
+      String firstLetter = keyword.substring(0, 1);
+      String rest = keyword.substring(1);
+      result.append(String.format("[%s%s]%s", firstLetter.toUpperCase(), firstLetter, rest));
+      if (i < NAVIGATION_KEYWORDS.length - 1) {
+        result.append("|");
+      }
+    }
+    result.append(").*");
+    return Pattern.compile(result.toString());
+  }
+
+  /**
+   * Check if a given text is a policy.<br><br>
+   *
+   * Policy check is entirely keyword-based. Substituting this for a classification might be worth
+   * looking into. Constants can be adjusted.
+   *
+   * @param text Text to check
+   * @return Whether the text is a privacy policy
+   */
   public static boolean isPolicy(String text) {
-    // TODO: Add educated policy matching condition
-    /*int matches = 0;
-    if (StringUtils.split(text, " ").length > WORD_COUNT) {
+    final double WORD_THRESHOLD = 500;
+    final double RATIO_THRESHOLD = 0.04;
+    double words = StringUtils.split(text, " ").length;
+    if (words > WORD_THRESHOLD) {
+      double matches = 0;
       for (String keyword : PRIVACY_POLICY_KEYWORDS) {
-        matches += StringUtils.countMatches(text, keyword);
-        if (matches >= MATCH_COUNT) {
-          DroidLogger.log(String.format("Matches: %d", matches));
+        matches += StringUtils.countMatches(text.toLowerCase(), keyword);
+        if (matches / words >= RATIO_THRESHOLD) {
           return true;
         }
       }
     }
-    DroidLogger.log(String.format("Matches: %d", matches));*/
     return false;
   }
 }

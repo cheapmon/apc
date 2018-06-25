@@ -36,4 +36,13 @@ public class DroidLogger {
     Log.i(DroidMain.class.getSimpleName(), msg);
   }
 
+  /**
+   * Write object to log.
+   *
+   * @param object Object to write
+   */
+  public static void log(Object object) {
+    Log.i(DroidMain.class.getSimpleName(), object.toString());
+  }
+
 }

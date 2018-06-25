@@ -47,7 +47,7 @@ public class ModelExtractor {
    *
    * @return Extracted Model
    */
-  public Model getModel() {
+  public Model getModel() throws DroidException {
     this.e.start();
     Queue<Page> pages = new LinkedList<>();
     Model model = new Model(this.id, this.e.getDisplayBounds());
@@ -65,8 +65,7 @@ public class ModelExtractor {
         try {
           this.e.start(page.getPath());
           UiObject2 clickView = this.e.find(d);
-          clickView.click();
-          this.e.waitForUpdate();
+          this.e.click(clickView);
           Page newPage = this.e.getPage();
           newPage.addToPath(page, d);
           boolean isNew;
