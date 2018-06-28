@@ -5,18 +5,10 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit',
-            name: 'junit',
-            version: '4.12'
-    androidTestCompile group: 'com.android.support.test.espresso',
-            name: 'espresso-core',
-            version: '2.2.2'
-    androidTestCompile group: 'com.android.support.test.uiautomator',
-            name: 'uiautomator-v18',
-            version: '2.1.2'
-    compile group: 'org.apache.commons',
-            name: 'commons-lang3',
-            version: '3.7'
+    testCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    compile 'org.apache.commons:commons-lang3:3.7'
 }
 
 buildscript {
@@ -61,4 +53,11 @@ android {
     lintOptions {
         abortOnError false
     }
+}
+
+task doc(type: Javadoc) {
+    source = android.sourceSets.androidTest.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    destinationDir = file("../build/doc/droid")
+    failOnError false
 }

@@ -1,6 +1,7 @@
 package com.github.cheapmon.apc.util;
 
 import com.github.cheapmon.apc.APCOptions;
+import com.github.cheapmon.apc.APCOptions.ExtractionMode;
 import com.github.cheapmon.apc.failure.APCException;
 import com.github.cheapmon.apc.failure.SystemCallException;
 import java.io.BufferedReader;
@@ -127,10 +128,10 @@ public class ADBConnector {
   public void install() throws APCException {
     File debugAPK = new File(DEBUG_APK.toAbsolutePath().toString());
     File testAPK = new File(TEST_APK.toAbsolutePath().toString());
-    buildADB("push", debugAPK.getAbsolutePath(), DEBUG_DEST);
-    buildADB("shell", "pm", "install", "-t", "-r", DEBUG_DEST);
-    buildADB("push", testAPK.getAbsolutePath(), TEST_DEST);
-    buildADB("shell", "pm", "install", "-t", "-r", TEST_DEST);
+    this.buildADB("push", debugAPK.getAbsolutePath(), DEBUG_DEST);
+    this.buildADB("shell", "pm", "install", "-t", "-r", DEBUG_DEST);
+    this.buildADB("push", testAPK.getAbsolutePath(), TEST_DEST);
+    this.buildADB("shell", "pm", "install", "-t", "-r", TEST_DEST);
     APCLogger.info(ADBConnector.class, String.format("Installed APK on device %s", this.device));
     APCLogger.space();
   }
@@ -141,9 +142,9 @@ public class ADBConnector {
    * @throws APCException Removing fails
    */
   public void remove() throws APCException {
-    buildADB("shell", "am", "force-stop", "com.github.cheapmon.apc.droid");
-    buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid");
-    buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid.test");
+    this.buildADB("shell", "am", "force-stop", "com.github.cheapmon.apc.droid");
+    this.buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid");
+    this.buildADB("shell", "pm", "uninstall", "com.github.cheapmon.apc.droid.test");
     APCLogger.info(ADBConnector.class, "Removed all APC files from device");
     APCLogger.space();
   }
@@ -158,9 +159,9 @@ public class ADBConnector {
     Path filePath = options.getFile().toAbsolutePath();
     String fileName = options.getFile().getFileName().toString();
     APCLogger.info(ADBConnector.class, "Loading tests onto device");
-    buildADB("push", filePath.toString(), ID_FILE);
-    spawnTests(options);
-    collectModels();
+    this.buildADB("push", filePath.toString(), ID_FILE);
+    this.spawnTests(options);
+    this.collect(options.getExtractionMode() == ExtractionMode.MODEL);
     try {
       if (fileName.equals("ids.txt")) {
         Files.delete(filePath);
@@ -186,7 +187,7 @@ public class ADBConnector {
     String runner = "com.github.cheapmon.apc.droid.test/android.support.test.runner.AndroidJUnitRunner";
     Runnable r = () -> {
       try {
-        InputStream stream = buildADB("shell", "am", "instrument", "-w", "-r",
+        InputStream stream = this.buildADB("shell", "am", "instrument", "-w", "-r",
             "--no-window-animation",
             "-e", "file", ID_FILE,
             "-e", "mode", mode,
@@ -208,12 +209,12 @@ public class ADBConnector {
    *
    * @throws APCException Socket communication fails
    */
-  private void collectModels() throws APCException {
-    ArrayList<String> inList = new ArrayList<>(2);
+  private void collect(boolean model) throws APCException {
     try {
       ServerSocket serverSocket = new ServerSocket(2000);
       outer:
       while (true) {
+        ArrayList<String> inList = new ArrayList<>(2);
         Socket clientSocket = serverSocket.accept();
         BufferedReader clientIn = new BufferedReader(
             new InputStreamReader(clientSocket.getInputStream()));
@@ -225,7 +226,7 @@ public class ADBConnector {
               serverSocket.close();
               break outer;
             case "---":
-              writeFile(inList);
+              this.writeFile(inList, model);
               break;
             default:
               inList.add(in);
@@ -244,13 +245,21 @@ public class ADBConnector {
    * @param lines Lines of output file
    * @throws APCException Writing file fails
    */
-  private void writeFile(ArrayList<String> lines) throws APCException {
+  private void writeFile(ArrayList<String> lines, boolean model) throws APCException {
     try {
       String idString = lines.get(0);
       String modelString = String.join("\n", lines.subList(1, lines.size()));
-      File outFile = new File(String.format("out/%s.xml", idString));
-      outFile.getParentFile().mkdirs();
-      outFile.createNewFile();
+      File outFile;
+      if (model) {
+        outFile = new File(String.format("out/%s.xml", idString));
+      } else {
+        outFile = new File(String.format("out/%s.txt", idString));
+      }
+      boolean parentFile = outFile.getParentFile().mkdirs();
+      boolean success = outFile.createNewFile();
+      if (!parentFile && !success) {
+        throw new APCException("File creation failed");
+      }
       PrintWriter out = new PrintWriter(new FileOutputStream(outFile.getAbsolutePath(), false));
       out.println(modelString);
       out.close();

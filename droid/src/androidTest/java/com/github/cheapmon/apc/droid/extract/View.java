@@ -12,7 +12,7 @@ import org.w3c.dom.Element;
 /**
  * Represent a single view on the page.
  */
-public class View {
+class View {
 
   /**
    * Class of this View
@@ -37,17 +37,17 @@ public class View {
   /**
    * Collection of possible text contents of this view
    */
-  private HashSet<String> text;
+  private final HashSet<String> text;
 
   /**
    * Child views of this view
    */
-  private List<View> children;
+  private final List<View> children;
 
   /**
    * Instantiate new View from UiAutomator representation.
    */
-  public View(UiObject2 object) {
+  View(UiObject2 object) {
     this.className = Optional.fromNullable(object.getClassName()).or("");
     this.packageName = Optional.fromNullable(object.getApplicationPackage()).or("");
     this.text = new HashSet<>();
@@ -65,7 +65,7 @@ public class View {
    *
    * @param otherView View to merge from
    */
-  public void merge(View otherView) {
+  void merge(View otherView) {
     this.text.addAll(otherView.text);
     if (this.scrollable) {
       View container = this.children.get(0);
@@ -88,8 +88,8 @@ public class View {
    *
    * @return Resulting text
    */
-  public String dumpText() {
-    return dump().toString().trim();
+  String dumpText() {
+    return this.dump().toString().trim();
   }
 
   /**
@@ -120,7 +120,7 @@ public class View {
    * @param document Document element is saved in
    * @return Resulting element
    */
-  public Element toElement(Document document) {
+  Element toElement(Document document) {
     Element view = document.createElement("view");
     view.setAttribute("class", this.className);
     view.setAttribute("package", this.packageName);
@@ -172,7 +172,7 @@ public class View {
    * @param obj View to check for equivalency
    * @return View is equivalent
    */
-  public boolean isEquivalent(Object obj) {
+  boolean isEquivalent(Object obj) {
     if (!(obj instanceof View)) {
       return false;
     }

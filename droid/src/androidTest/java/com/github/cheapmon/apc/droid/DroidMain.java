@@ -53,20 +53,29 @@ public class DroidMain {
    */
   @Test
   public void main() throws DroidException {
-    parseCommands();
+    this.parseCommands();
     if (this.mode.equals("MODEL")) {
       for (String id : this.ids) {
         if (GooglePlayWizard.install(id) != InstallState.FAILURE) {
           Model model = new ModelExtractor(id).getModel();
-          send(model.toXML(), id);
+          this.send(model.toXML(), id);
         }
-        //GooglePlayWizard.removeSilently(id);
+        GooglePlayWizard.removeSilently(id);
       }
-      send(null, null);
+      this.send(null, null);
     } else {
       try {
         SearchAlgorithm algorithm = SearchHelper.get(this.algorithm).newInstance();
-        DroidLogger.log(String.valueOf(algorithm.run(this.ids[0])));
+        for (String id : this.ids) {
+          if (GooglePlayWizard.install(id) != InstallState.FAILURE) {
+            String result = algorithm.run(id);
+            if (result != null) {
+              this.send(result, id);
+            }
+          }
+          GooglePlayWizard.removeSilently(id);
+        }
+        this.send(null, null);
       } catch (InstantiationException | IllegalAccessException ex) {
         throw new DroidException("Running algorithm failed", ex);
       }
@@ -79,7 +88,7 @@ public class DroidMain {
   private void parseCommands() throws DroidException {
     Bundle extras = InstrumentationRegistry.getArguments();
     try {
-      this.ids = readIDFile(extras.getString("file"));
+      this.ids = this.readIDFile(extras.getString("file"));
     } catch (FileNotFoundException ex) {
       throw new DroidException("Reading id file failed", ex);
     }
@@ -114,28 +123,30 @@ public class DroidMain {
   }
 
   /**
-   * Send extracted model to to host computer.
+   * Send extracted text or model to to host computer.
    *
-   * @param model Extracted model of app
+   * @param txt Text
    * @param id Identification of app
    * @throws DroidException Sending fails
    */
-  private void send(String model, String id) throws DroidException {
+  private void send(String txt, String id) throws DroidException {
     try {
       Socket s = new Socket("10.0.2.2", 2000);
       PrintWriter out = new PrintWriter(s.getOutputStream());
-      if (model == null && id == null) {
+      if (txt == null && id == null) {
+        out.print("\n");
         out.print("OK");
       } else {
         out.print(String.format("%s\n", id));
-        out.print(model);
-        out.print("---\n");
+        out.print(txt);
+        out.print("\n");
+        out.print("---");
       }
       out.flush();
       out.close();
       s.close();
     } catch (IOException ex) {
-      throw new DroidException("Sending model failed", ex);
+      throw new DroidException("Sending txt failed", ex);
     }
   }
 

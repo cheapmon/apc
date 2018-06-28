@@ -1,10 +1,23 @@
 package com.github.cheapmon.apc.droid.search;
 
-public class BreadthFirstSearch implements SearchAlgorithm {
+import com.github.cheapmon.apc.droid.extract.Page;
+import java.util.List;
 
+/**
+ * Search an app by applying breadth first search.
+ *
+ * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com>cheapmon</a>
+ */
+public class BreadthFirstSearch extends QueueBasedSearch {
+
+  /**
+   * Add new pages to end of queue.
+   *
+   * @param list New pages
+   */
   @Override
-  public String run(String id) {
-    return null;
+  protected void addToQueue(List<Page> list) {
+    this.pages.addAll(list);
   }
 
 }

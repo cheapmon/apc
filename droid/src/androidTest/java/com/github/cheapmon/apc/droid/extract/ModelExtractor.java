@@ -37,7 +37,7 @@ public class ModelExtractor {
    *
    * @param id Application id
    */
-  public ModelExtractor(String id) {
+  public ModelExtractor(String id) throws DroidException {
     this.id = id;
     this.e = new ExtractionHelper(id);
   }
@@ -65,8 +65,7 @@ public class ModelExtractor {
         try {
           this.e.start(page.getPath());
           UiObject2 clickView = this.e.find(d);
-          clickView.click();
-          this.e.waitForUpdate();
+          this.e.click(clickView);
           Page newPage = this.e.getPage();
           newPage.addToPath(page, d);
           boolean isNew;

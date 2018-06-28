@@ -23,7 +23,7 @@ public class GooglePlayWizard {
   /**
    * Crawl helper for this class
    */
-  private static GooglePlayHelper g = new GooglePlayHelper();
+  private static final GooglePlayHelper g = new GooglePlayHelper();
 
   /**
    * Install application.<br><br>
@@ -38,9 +38,8 @@ public class GooglePlayWizard {
    * </ul>
    *
    * @param id App id
-   * @throws DroidException Device communication fails
    */
-  public static InstallState install(String id) throws DroidException {
+  public static InstallState install(String id) {
     if (installed(id)) {
       return InstallState.ALREADY_INSTALLED;
     }
@@ -75,31 +74,27 @@ public class GooglePlayWizard {
    * Click uninstall button and confirm.
    *
    * @param id Application id
-   * @throws DroidException Device communication fails
    */
-  public static InstallState remove(String id) throws DroidException {
+  public static void remove(String id) {
     g.start(id);
     g.click("buttonContainer", "button");
     g.click("buttonPanel", "firstButton");
     g.waitUntilGone("message");
     g.waitUntilHas("buttonContainer");
-    return InstallState.SUCCESS;
   }
 
   /**
    * Remove application via shell command.
    *
    * @param id Application id
-   * @return Removal succeeded or not
    */
-  public static InstallState removeSilently(String id) throws DroidException {
+  public static void removeSilently(String id) throws DroidException {
     UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     try {
       device.executeShellCommand(String.format("pm uninstall %s", id));
     } catch (IOException ex) {
       throw new DroidException("Shell command failed", ex);
     }
-    return InstallState.SUCCESS;
   }
 
   /**
@@ -109,9 +104,8 @@ public class GooglePlayWizard {
    *
    * @param id Application id
    * @return Whether the app can be installed or not
-   * @throws DroidException Device communication fails
    */
-  public static boolean canBeInstalled(String id) throws DroidException {
+  public static boolean canBeInstalled(String id) {
     g.start(id);
     return !g.has("warningMessage");
   }
