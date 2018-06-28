@@ -50,6 +50,9 @@ public class CommandLineParser {
         printUsage();
       }
       Path file = getFile(cl.getOptionValues("id"), cl.getOptionValue("file"));
+      if (file == null) {
+        throw new APCException("File does not exist");
+      }
       ExtractionMode extractionMode = getMode(cl.hasOption("extract-model"));
       String device = getDevice(cl.getOptionValue("device"));
       Algorithm algorithm = getAlgorithm(cl.getOptionValue("search"));
@@ -184,8 +187,8 @@ public class CommandLineParser {
   /**
    * Get device extraction is run on.<br><br>
    *
-   * Input is a device label. If none is given, defaults to first device in list. If no device
-   * is attached or the given label is incorrect, APC halts.
+   * Input is a device label. If none is given, defaults to first device in list. If no device is
+   * attached or the given label is incorrect, APC halts.
    *
    * @param device Device label given by user
    * @return Device label chosen by APC

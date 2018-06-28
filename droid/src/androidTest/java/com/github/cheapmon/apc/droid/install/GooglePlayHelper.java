@@ -15,12 +15,12 @@ import java.util.HashMap;
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
-public class GooglePlayHelper {
+class GooglePlayHelper {
 
   /**
    * Device to interact with
    */
-  private UiDevice device;
+  private final UiDevice device;
 
   /**
    * Set of common UI containers
@@ -35,9 +35,9 @@ public class GooglePlayHelper {
   /**
    * Create new helper.
    */
-  public GooglePlayHelper() {
+  GooglePlayHelper() {
     this.device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-    initContainers();
+    this.initContainers();
   }
 
   /**
@@ -50,8 +50,8 @@ public class GooglePlayHelper {
     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
     InstrumentationRegistry.getContext().startActivity(intent);
-    waitUntilHas("market", this.TIMEOUT * 5);
-    waitForChange();
+    this.waitUntilHas("market", this.TIMEOUT * 5);
+    this.waitForChange();
   }
 
   /**
@@ -60,7 +60,7 @@ public class GooglePlayHelper {
    * @param containers Chain of containers, last one will be clicked
    */
   public void click(String... containers) {
-    waitUntilHas(containers[0]);
+    this.waitUntilHas(containers[0]);
     UiObject2 objectToClick = null;
     for (String container : containers) {
       if (objectToClick == null) {
@@ -70,14 +70,14 @@ public class GooglePlayHelper {
       }
     }
     objectToClick.click();
-    waitForChange();
-    waitUntilGone(containers[0]);
+    this.waitForChange();
+    this.waitUntilGone(containers[0]);
   }
 
   /**
    * Wait until the screen has changed.
    */
-  public void waitForChange() {
+  private void waitForChange() {
     this.device.waitForWindowUpdate("com.android.vending", this.TIMEOUT);
   }
 
@@ -86,7 +86,7 @@ public class GooglePlayHelper {
    *
    * @param container Container
    */
-  public void waitUntilHas(String container) {
+  void waitUntilHas(String container) {
     this.device.wait(Until.hasObject(this.containers.get(container)), this.TIMEOUT);
   }
 
@@ -96,7 +96,7 @@ public class GooglePlayHelper {
    * @param container Container
    * @param timeout Time to wait
    */
-  public void waitUntilHas(String container, int timeout) {
+  private void waitUntilHas(String container, int timeout) {
     this.device.wait(Until.hasObject(this.containers.get(container)), timeout);
   }
 
@@ -105,7 +105,7 @@ public class GooglePlayHelper {
    *
    * @param container Container
    */
-  public void waitUntilGone(String container) {
+  void waitUntilGone(String container) {
     while (this.device.hasObject(this.containers.get(container))) {
       this.device.wait(Until.gone(this.containers.get(container)), this.TIMEOUT);
     }
@@ -117,7 +117,7 @@ public class GooglePlayHelper {
    * @param container Container to check
    * @return Whether or not the container exists
    */
-  public boolean has(String container) {
+  boolean has(String container) {
     return this.device.hasObject(this.containers.get(container));
   }
 

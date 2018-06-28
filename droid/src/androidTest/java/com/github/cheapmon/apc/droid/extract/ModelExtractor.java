@@ -37,7 +37,7 @@ public class ModelExtractor {
    *
    * @param id Application id
    */
-  public ModelExtractor(String id) {
+  public ModelExtractor(String id) throws DroidException {
     this.id = id;
     this.e = new ExtractionHelper(id);
   }
@@ -47,7 +47,7 @@ public class ModelExtractor {
    *
    * @return Extracted Model
    */
-  public Model getModel() throws DroidException {
+  public Model getModel() {
     this.e.start();
     Queue<Page> pages = new LinkedList<>();
     Model model = new Model(this.id, this.e.getDisplayBounds());

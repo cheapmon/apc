@@ -31,17 +31,17 @@ public class Model {
   /**
    * Application identification this model belongs to
    */
-  private String id;
+  private final String id;
 
   /**
    * All nodes of this model
    */
-  private List<ModelNode> nodes;
+  private final List<ModelNode> nodes;
 
   /**
    * Display bounds of model
    */
-  private Rect bounds;
+  private final Rect bounds;
 
   /**
    * Instantiate new model from scratch.

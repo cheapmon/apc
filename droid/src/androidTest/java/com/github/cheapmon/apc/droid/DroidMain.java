@@ -60,17 +60,20 @@ public class DroidMain {
           Model model = new ModelExtractor(id).getModel();
           this.send(model.toXML(), id);
         }
-        //GooglePlayWizard.removeSilently(id);
+        GooglePlayWizard.removeSilently(id);
       }
       this.send(null, null);
     } else {
       try {
         SearchAlgorithm algorithm = SearchHelper.get(this.algorithm).newInstance();
         for (String id : this.ids) {
-          String result = algorithm.run(id);
-          if (result != null) {
-            this.send(result, id);
+          if (GooglePlayWizard.install(id) != InstallState.FAILURE) {
+            String result = algorithm.run(id);
+            if (result != null) {
+              this.send(result, id);
+            }
           }
+          GooglePlayWizard.removeSilently(id);
         }
         this.send(null, null);
       } catch (InstantiationException | IllegalAccessException ex) {

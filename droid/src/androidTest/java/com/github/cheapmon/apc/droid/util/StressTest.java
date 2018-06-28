@@ -8,12 +8,12 @@ import com.github.cheapmon.apc.droid.install.GooglePlayWizard.InstallState;
 /**
  * Simple test to check endurance of Google Play installation and removal.<br><br>
  *
- * Every app is installed and then removed, counting attempts and failures. Also mentions total
- * time consumption.
+ * Every app is installed and then removed, counting attempts and failures. Also mentions total time
+ * consumption.
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
-public class StressTest {
+class StressTest {
 
   /**
    * Run test.
@@ -44,13 +44,13 @@ public class StressTest {
           attempts = 0;
           continue;
         }
-        InstallState remove = GooglePlayWizard.removeSilently(id);
+        GooglePlayWizard.removeSilently(id);
         if (attempts > longestAttempt) {
           longestAttempt = attempts;
         }
         write("[%s/%s] %s (Attempt #%s)\n", i + 1, size, id, attempts);
         write("install %s\n", install);
-        write("remove %s\n", remove);
+        write("remove %s\n", InstallState.SUCCESS);
         write("------------------------------------------\n");
         attempts = 0;
       } catch (Exception ex) {

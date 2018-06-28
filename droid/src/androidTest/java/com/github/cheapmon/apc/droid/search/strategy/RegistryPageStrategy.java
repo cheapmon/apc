@@ -33,7 +33,6 @@ public class RegistryPageStrategy implements SearchStrategy {
         ExtractionHelper e = new ExtractionHelper(id);
         e.start();
         e.waitForUpdate();
-        List<List<DroidSelector>> path = new ArrayList<>();
         List<List<DroidSelector>> buttons = e.get(By.clickable(true).text(
             Pattern.compile(".*(([Ss]ign up)|([Rr]egister)|([Rr]egistrieren)|([Ll]ogin)).*")
         ));
@@ -41,7 +40,7 @@ public class RegistryPageStrategy implements SearchStrategy {
           UiObject2 obj = e.find(list);
           if (obj != null) {
             e.click(obj);
-            List<List<DroidSelector>> p = new ArrayList<>(path);
+            List<List<DroidSelector>> p = new ArrayList<>(new ArrayList<>());
             p.add(list);
             Page result = new TextViewStrategy().search(id, p);
             if (result != null) {

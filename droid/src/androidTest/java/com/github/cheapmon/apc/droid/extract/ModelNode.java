@@ -20,14 +20,14 @@ class ModelNode {
   /**
    * Pages of this node
    */
-  private List<Page> pages;
+  private final List<Page> pages;
 
   /**
    * Create new node.
    *
    * @param activityName Activity for new node
    */
-  public ModelNode(Page page, String activityName) {
+  ModelNode(Page page, String activityName) {
     this.activityName = activityName;
     this.pages = new ArrayList<>();
     this.pages.add(page);
@@ -62,7 +62,7 @@ class ModelNode {
    * @param document Document element is saved in
    * @return Resulting element
    */
-  public Element toElement(Document document) {
+  Element toElement(Document document) {
     Element activity = document.createElement("node");
     activity.setAttribute("id", this.activityName);
     for (Page page : this.pages) {

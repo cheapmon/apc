@@ -35,30 +35,30 @@ public class TextViewStrategy implements SearchStrategy {
    * @return Policy page
    */
   @Override
-  public Page search(String id) {
+  public Page search(String id) throws DroidException {
     ExtractionHelper e = new ExtractionHelper(id);
     e.start(this.path);
-      try {
-        UiObject2 obj = e.getRoot().findObject(
-            By.clazz(TextView.class).clickable(true).text(SearchHelper.NAVIGATION_REGEX)
+    try {
+      UiObject2 obj = e.getRoot().findObject(
+          By.clazz(TextView.class).clickable(true).text(SearchHelper.NAVIGATION_REGEX)
+      );
+      if (obj != null) {
+        e.click(obj);
+        obj = e.getRoot().findObject(
+            By.clazz(View.class).clickable(true).text(Pattern.compile(".*(Daten|Privacy).*"))
         );
         if (obj != null) {
           e.click(obj);
-          obj = e.getRoot().findObject(
-              By.clazz(View.class).clickable(true).text(Pattern.compile(".*(Daten|Privacy).*"))
-          );
-          if (obj != null) {
-            e.click(obj);
-          }
-          Page page = new Page(e.getRoot());
-          if (SearchHelper.isPolicy(page.dumpText())) {
-            return page;
-          } else {
-            e.start(this.path);
-          }
         }
-      } catch (IndexOutOfBoundsException | StaleObjectException | NullPointerException ignored) {
+        Page page = new Page(e.getRoot());
+        if (SearchHelper.isPolicy(page.dumpText())) {
+          return page;
+        } else {
+          e.start(this.path);
+        }
       }
+    } catch (IndexOutOfBoundsException | StaleObjectException | NullPointerException ignored) {
+    }
     return null;
   }
 

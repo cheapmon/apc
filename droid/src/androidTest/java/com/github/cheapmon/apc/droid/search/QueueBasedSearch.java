@@ -21,7 +21,7 @@ abstract class QueueBasedSearch implements SearchAlgorithm {
   /**
    * List of pages to check in search
    */
-  protected LinkedList<Page> pages = new LinkedList<>();
+  final LinkedList<Page> pages = new LinkedList<>();
 
   /**
    * Search for policy.
@@ -30,7 +30,7 @@ abstract class QueueBasedSearch implements SearchAlgorithm {
    * @return Policy text
    */
   @Override
-  public String run(String id) {
+  public String run(String id) throws DroidException {
     ExtractionHelper e = new ExtractionHelper(id);
     e.start();
     Model model = new Model(id, e.getDisplayBounds());
@@ -68,7 +68,7 @@ abstract class QueueBasedSearch implements SearchAlgorithm {
         } catch (IndexOutOfBoundsException | NullPointerException | StaleObjectException ignored) {
         }
       }
-      addToQueue(newPages);
+      this.addToQueue(newPages);
     }
     return null;
   }

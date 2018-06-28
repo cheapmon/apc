@@ -255,8 +255,11 @@ public class ADBConnector {
       } else {
         outFile = new File(String.format("out/%s.txt", idString));
       }
-      outFile.getParentFile().mkdirs();
-      outFile.createNewFile();
+      boolean parentFile = outFile.getParentFile().mkdirs();
+      boolean success = outFile.createNewFile();
+      if (!parentFile && !success) {
+        throw new APCException("File creation failed");
+      }
       PrintWriter out = new PrintWriter(new FileOutputStream(outFile.getAbsolutePath(), false));
       out.println(modelString);
       out.close();

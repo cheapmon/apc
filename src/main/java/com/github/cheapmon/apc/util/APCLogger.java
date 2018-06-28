@@ -14,17 +14,17 @@ import org.apache.logging.log4j.Logger;
  *
  * @author <a href="mailto:simon.kaleschke.leipzig@gmail.com">cheapmon</a>
  */
-public class APCLogger {
+class APCLogger {
 
   /**
    * List of loggers for different classes.
    */
-  private static List<Logger> loggerList = new ArrayList<Logger>();
+  private static final List<Logger> loggerList = new ArrayList<>();
 
   /**
    * Print APC logo to log.
    */
-  public static void logo() {
+  static void logo() {
     info(APCMain.class,
         "      ___           ___         ___     \n"
             + "     /  /\\         /  /\\       /  /\\    \n"
@@ -42,7 +42,7 @@ public class APCLogger {
   /**
    * Print break line to log.
    */
-  public static void space() {
+  static void space() {
     info(APCMain.class, "--------------------------------------------------");
   }
 

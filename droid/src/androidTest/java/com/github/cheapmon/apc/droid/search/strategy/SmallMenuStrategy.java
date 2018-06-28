@@ -40,7 +40,7 @@ public class SmallMenuStrategy implements SearchStrategy {
   public Page search(String id) throws DroidException {
     this.e = new ExtractionHelper(id);
     this.e.start();
-    skipPanel();
+    this.skipPanel();
     List<List<DroidSelector>> buttons = this.e.get(By.clazz(Button.class).clickable(true));
     buttons.addAll(this.e.get(By.clazz(ImageButton.class).clickable(true)));
     buttons.addAll(this.e.get(By.clazz(ImageView.class).clickable(true)));
@@ -48,7 +48,7 @@ public class SmallMenuStrategy implements SearchStrategy {
       try {
         List<List<DroidSelector>> path = new ArrayList<>();
         this.e.start();
-        skipPanel();
+        this.skipPanel();
         UiObject2 obj = this.e.find(list);
         if (obj == null) {
           continue;
@@ -102,7 +102,7 @@ public class SmallMenuStrategy implements SearchStrategy {
    */
   private void skipPanel() {
     try {
-      BySelector parentPanel = By.res(Pattern.compile(".*:id\\/parentPanel"));
+      BySelector parentPanel = By.res(Pattern.compile(".*:id/parentPanel"));
       if (this.e.getRoot().hasObject(parentPanel)) {
         UiObject2 button = this.e.getRoot().findObject(parentPanel)
             .findObject(By.clazz(Button.class));

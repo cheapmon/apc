@@ -61,12 +61,15 @@ public class ExtractionHelper {
    *
    * @param applicationID ID of application
    */
-  public ExtractionHelper(String applicationID) {
+  public ExtractionHelper(String applicationID) throws DroidException {
     this.applicationID = applicationID;
     this.device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     this.launchContext = InstrumentationRegistry.getContext();
     this.launchIntent = this.launchContext.getPackageManager()
         .getLaunchIntentForPackage(this.applicationID);
+    if (this.launchIntent == null) {
+      throw new DroidException("Launch intent corrupted");
+    }
     this.launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
   }
 
@@ -165,7 +168,6 @@ public class ExtractionHelper {
           }
         }
         return this.device.findObject(drawerLayout).getChildren().get(smallestID);
-        //return this.device.findObject(drawerLayout).getChildren().get(1);
       }
     }
     return this.device.findObject(By.pkg(this.applicationID).depth(0));
